@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                    EVA UNIT-01 LAN IP DISPLAY                                 ║
+# ║                         Shows local IP address                                ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+case "$1" in
+    --copy)
+        # Copy IP to clipboard
+        IP=$(ip route get 1.1.1.1 2>/dev/null | awk '{print $7}' | head -1)
+        if [ -n "$IP" ]; then
+            echo "$IP" | xclip -selection clipboard
+            notify-send "📡 LAN IP" "Copied: $IP" -t 2000
+        fi
+        ;;
+    *)
+        # Display IP
+        IP=$(ip route get 1.1.1.1 2>/dev/null | awk '{print $7}' | head -1)
+        if [ -n "$IP" ]; then
+            echo "📡 $IP"
+        else
+            echo "📡 No IP"
+        fi
+        ;;
+esac

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                    EVA UNIT-01 NOTIFICATION COUNT                             ║
+# ║                         Shows dunst notification count                        ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+# Get notification count from dunst
+COUNT=$(dunstctl count waiting 2>/dev/null || echo "0")
+
+if [ "$COUNT" -gt 0 ]; then
+    echo " $COUNT"
+else
+    echo " 0"
+fi

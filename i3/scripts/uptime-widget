@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                         SYSTEM UPTIME WIDGET                                  ║
+# ║                         EVA UNIT-01 THEME                                     ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+# Get uptime in seconds
+UPTIME_SECONDS=$(cat /proc/uptime | cut -d' ' -f1 | cut -d'.' -f1)
+
+# Calculate days, hours, minutes
+DAYS=$((UPTIME_SECONDS / 86400))
+HOURS=$(( (UPTIME_SECONDS % 86400) / 3600 ))
+MINUTES=$(( (UPTIME_SECONDS % 3600) / 60 ))
+
+# Format output
+if [ "$DAYS" -gt 0 ]; then
+    UPTIME_STR="${DAYS}d ${HOURS}h ${MINUTES}m"
+elif [ "$HOURS" -gt 0 ]; then
+    UPTIME_STR="${HOURS}h ${MINUTES}m"
+else
+    UPTIME_STR="${MINUTES}m"
+fi
+
+# Color based on uptime (green for fresh, yellow for weeks, red for months)
+COLOR="#44FF88"  # Green
+if [ "$DAYS" -gt 30 ]; then
+    COLOR="#FF5577"  # Red
+elif [ "$DAYS" -gt 7 ]; then
+    COLOR="#FFB347"  # Orange
+fi
+
+echo "  $UPTIME_STR"
+echo "  $UPTIME_STR"
+echo "$COLOR"

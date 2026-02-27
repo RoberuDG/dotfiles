@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                         EVA UNIT-01 LOCK SCREEN                               ║
+# ║                         Styled xss-lock wrapper                               ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+# EVA Unit-01 Background Image
+BG_IMAGE="/usr/share/endeavouros/backgrounds/eva.jpg"
+COLOR_TEXT="#44FF88"        # Neon Green
+COLOR_DATE="#B4BEFE"        # Lavender
+COLOR_PURPLE="#8A33FF"      # EVA Purple
+
+# Get current time and date
+TIME=$(date +"%H:%M:%S")
+DATE=$(date +"%A, %d %B %Y")
+
+# Kill any existing lock screens
+killall i3lock 2>/dev/null
+
+# Create a temporary lock screen image with date/time overlay
+LOCK_IMG="/tmp/lock_screen_$$.png"
+
+# Check if background exists
+if [ -f "$BG_IMAGE" ]; then
+    # Generate lock screen with background image + overlay
+    convert "$BG_IMAGE" \
+        -resize 1920x1080^ \
+        -gravity center \
+        -extent 1920x1080 \
+        -fill "rgba(0,0,0,0.4)" \
+        -draw "rectangle 0,0 1920,1080" \
+        -gravity center \
+        -pointsize 120 \
+        -fill "$COLOR_TEXT" \
+        -font "Iosevka Nerd Font-Bold" \
+        -annotate +0+0 "$TIME" \
+        -pointsize 32 \
+        -fill "$COLOR_DATE" \
+        -font "Iosevka Nerd Font" \
+        -annotate +0+60 "$DATE" \
+        -pointsize 24 \
+        -fill "$COLOR_PURPLE" \
+        -annotate +0+120 "  SYSTEM LOCKED - EVA UNIT-01" \
+        "$LOCK_IMG" 2>/dev/null
+    
+    # Lock with generated image
+    if [ -f "$LOCK_IMG" ]; then
+        i3lock -i "$LOCK_IMG" --ignore-empty-password
+        rm -f "$LOCK_IMG"
+    else
+        # Fallback to solid color
+        i3lock -c "#0D0B14" --ignore-empty-password
+    fi
+else
+    # No background image, use solid color
+    i3lock -c "#0D0B14" --ignore-empty-password
+fi

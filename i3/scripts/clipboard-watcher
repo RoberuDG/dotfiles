@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                    EVA UNIT-01 CLIPBOARD WATCHER                              ║
+# ║                         Auto-capture clipboard to cliphist                    ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+# This script watches the X11 clipboard and stores everything in cliphist
+
+# Kill any existing watchers
+pkill -f "cliphist store" 2>/dev/null
+
+# Watch clipboard and store automatically
+while true; do
+    # Store clipboard content when it changes
+    xclip -selection clipboard -o 2>/dev/null | cliphist store 2>/dev/null
+    sleep 0.5
+done

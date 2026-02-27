@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                    EVA UNIT-01 CLIPBOARD MANAGER                              ║
+# ║                         Cliphist + Rofi Integration                           ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+# EVA Theme Colors
+COLOR_BG="#1C1A25"
+COLOR_FG="#F0F0F0"
+COLOR_PURPLE="#8A33FF"
+COLOR_GREEN="#44FF88"
+
+case "$1" in
+    --show)
+        # Show clipboard history in rofi
+        cliphist list | rofi -dmenu \
+            -config ~/.config/rofi/config.rasi \
+            -p " Clipboard" \
+            -theme-str 'window { width: 800px; }' \
+            -theme-str 'listview { lines: 15; }' \
+            -theme-str 'element-text { horizontal-align: 0.0; }' | \
+        cliphist decode | wl-copy
+        notify-send " Clipboard" "Item pasted!" -t 2000
+        ;;
+    --delete)
+        # Delete an item from clipboard history
+        cliphist list | rofi -dmenu \
+            -config ~/.config/rofi/config.rasi \
+            -p " Delete Item" \
+            -theme-str 'window { width: 800px; }' \
+            -theme-str 'listview { lines: 15; }' | \
+        cliphist delete
+        notify-send " Clipboard" "Item deleted!" -t 2000
+        ;;
+    --clear)
+        # Clear entire clipboard history
+        if echo -e "Yes\nNo" | rofi -dmenu -config ~/.config/rofi/config.rasi -p " Clear All History?"; then
+            cliphist wipe
+            notify-send " Clipboard" "History cleared!" -t 2000
+        fi
+        ;;
+    --count)
+        # Show number of items (for polybar)
+        COUNT=$(cliphist list | wc -l)
+        if [ "$COUNT" -gt 0 ]; then
+            echo " $COUNT"
+        else
+            echo " Empty"
+        fi
+        ;;
+    *)
+        echo "Usage: $0 {--show|--delete|--clear|--count}"
+        exit 1
+        ;;
+esac

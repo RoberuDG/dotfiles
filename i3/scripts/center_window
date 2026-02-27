@@ -1,0 +1,22 @@
+#!/bin/bash
+# Center the currently focused window
+# Useful for floating windows
+
+# Get the focused window ID
+window_id=$(xdotool getactivewindow)
+
+# Get screen dimensions
+screen_width=$(xrandr | grep '\*' | awk '{print $1}' | cut -d'x' -f1)
+screen_height=$(xrandr | grep '\*' | awk '{print $1}' | cut -d'x' -f2)
+
+# Get window dimensions
+window_geom=$(xdotool getwindowgeometry $window_id)
+window_width=$(echo "$window_geom" | grep -oP 'Width: \K\d+')
+window_height=$(echo "$window_geom" | grep -oP 'Height: \K\d+')
+
+# Calculate center position
+center_x=$(( (screen_width - window_width) / 2 ))
+center_y=$(( (screen_height - window_height) / 2 ))
+
+# Move window to center
+xdotool windowmove $window_id $center_x $center_y

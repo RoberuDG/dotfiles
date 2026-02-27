@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                    EVA UNIT-01 WALLPAPER MANAGER                              ║
+# ║                         swww Animated Wallpapers                              ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+# EVA Unit-01 Wallpapers Directory
+WALLPAPER_DIR="$HOME/Pictures/Wallpapers/EVA"
+DEFAULT_WALLPAPER="/usr/share/endeavouros/backgrounds/eva.jpg"
+
+# swww transition settings
+TRANSITION_TYPE="wipe"        # Options: simple, fade, outer, wipe, wave, grow, center
+TRANSITION_DURATION="1.5"
+TRANSITION_FPS="60"
+
+# Create wallpaper directory if it doesn't exist
+mkdir -p "$WALLPAPER_DIR"
+
+# Check if swww daemon is running, start if not
+if ! pgrep -x "swww-daemon" > /dev/null; then
+    swww-daemon --format xrgb &
+    sleep 1
+fi
+
+case "$1" in
+    --init)
+        # Initialize with default wallpaper
+        if [ -f "$DEFAULT_WALLPAPER" ]; then
+            swww img "$DEFAULT_WALLPAPER" \
+                --transition-type "$TRANSITION_TYPE" \
+                --transition-duration "$TRANSITION_DURATION" \
+                --transition-fps "$TRANSITION_FPS"
+        else
+            # Fallback solid color (EVA purple)
+            swww img --color "#8A33FF"
+        fi
+        ;;
+    --next)
+        # Next wallpaper from directory
+        swww img "$(find "$WALLPAPER_DIR" -type f \( -iname "*.jpg" -o -iname "*.png" -o -iname "*.jpeg" \) | shuf -n 1)" \
+            --transition-type "$TRANSITION_TYPE" \
+            --transition-duration "$TRANSITION_DURATION" \
+            --transition-fps "$TRANSITION_FPS"
+        ;;
+    --prev)
+        # Previous wallpaper (would need state tracking, using random for now)
+        swww img "$(find "$WALLPAPER_DIR" -type f \( -iname "*.jpg" -o -iname "*.png" -o -iname "*.jpeg" \) | shuf -n 1)" \
+            --transition-type "$TRANSITION_TYPE" \
+            --transition-duration "$TRANSITION_DURATION" \
+            --transition-fps "$TRANSITION_FPS"
+        ;;
+    --random)
+        # Random wallpaper
+        swww img "$(find "$WALLPAPER_DIR" -type f \( -iname "*.jpg" -o -iname "*.png" -o -iname "*.jpeg" \) | shuf -n 1)" \
+            --transition-type "$TRANSITION_TYPE" \
+            --transition-duration "$TRANSITION_DURATION" \
+            --transition-fps "$TRANSITION_FPS"
+        ;;
+    --select)
+        # Select wallpaper with rofi
+        WALLPAPER=$(find "$WALLPAPER_DIR" -type f \( -iname "*.jpg" -o -iname "*.png" -o -iname "*.jpeg" \) | \
+            rofi -dmenu -config ~/.config/rofi/config.rasi -p "🖼️ Select Wallpaper")
+        if [ -n "$WALLPAPER" ] && [ -f "$WALLPAPER" ]; then
+            swww img "$WALLPAPER" \
+                --transition-type "$TRANSITION_TYPE" \
+                --transition-duration "$TRANSITION_DURATION" \
+                --transition-fps "$TRANSITION_FPS"
+            notify-send "🖼️ Wallpaper" "Changed to $(basename "$WALLPAPER")" -t 2000
+        fi
+        ;;
+    --blur)
+        # Apply blur effect to current wallpaper
+        swww img "$DEFAULT_WALLPAPER" \
+            --transition-type "fade" \
+            --transition-duration "0.5"
+        ;;
+    --color)
+        # Set solid color background
+        COLOR="${2:-#8A33FF}"
+        swww img --color "$COLOR"
+        ;;
+    --reload)
+        # Reload current wallpaper
+        swww img --transition-type "fade" --transition-duration "0.3"
+        ;;
+    --kill)
+        # Stop swww daemon
+        swww kill
+        ;;
+    *)
+        # Default: set specific image or init
+        if [ -n "$1" ] && [ -f "$1" ]; then
+            swww img "$1" \
+                --transition-type "$TRANSITION_TYPE" \
+                --transition-duration "$TRANSITION_DURATION" \
+                --transition-fps "$TRANSITION_FPS"
+        else
+            # Initialize with default
+            if [ -f "$DEFAULT_WALLPAPER" ]; then
+                swww img "$DEFAULT_WALLPAPER" \
+                    --transition-type "$TRANSITION_TYPE" \
+                    --transition-duration "$TRANSITION_DURATION" \
+                    --transition-fps "$TRANSITION_FPS"
+            fi
+        fi
+        ;;
+esac

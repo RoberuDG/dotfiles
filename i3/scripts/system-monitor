@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                    EVA UNIT-01 SYSTEM MONITOR                                 ║
+# ║                         Floating Terminal with bpytop/bottom                  ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+# EVA Theme Colors
+COLOR_PURPLE="#8A33FF"
+COLOR_GREEN="#44FF88"
+
+# Monitor choice: bpytop, bottom, htop, btop
+MONITOR="${1:-bpytop}"
+
+# Check if the monitor tool exists
+if ! command -v "$MONITOR" &> /dev/null; then
+    # Fallback to htop if selected tool not found
+    if command -v htop &> /dev/null; then
+        MONITOR="htop"
+    else
+        notify-send "⚠️ System Monitor" "No monitoring tool found ($MONITOR)" -t 3000
+        exit 1
+    fi
+fi
+
+# Terminal to use (prefer kitty for better floating support)
+TERMINAL="${2:-kitty}"
+
+if ! command -v "$TERMINAL" &> /dev/null; then
+    TERMINAL="alacritty"
+fi
+
+# Kill existing monitor if running
+if pgrep -f "kitty.*$MONITOR\|alacritty.*$MONITOR" > /dev/null; then
+    pkill -f "kitty.*$MONITOR\|alacritty.*$MONITOR"
+    notify-send "📊 System Monitor" "Closed $MONITOR" -t 2000
+    exit 0
+fi
+
+# Launch monitor in floating terminal
+case "$TERMINAL" in
+    kitty)
+        # Kitty with floating window
+        kitty --class "SystemMonitor" --title " $MONITOR" -e "$MONITOR" &
+        # Make it floating via i3 rules (configured in i3 config)
+        ;;
+    alacritty)
+        # Alacritty
+        alacritty --class "SystemMonitor" -t " $MONITOR" -e "$MONITOR" &
+        ;;
+    *)
+        # Generic terminal
+        "$TERMINAL" -e "$MONITOR" &
+        ;;
+esac
+
+# Wait a moment for window to appear
+sleep 0.5
+
+# Send notification
+notify-send "📊 System Monitor" "Launched $MONITOR in $TERMINAL" -t 2000

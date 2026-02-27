@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                         NETWORK SPEED WIDGET                                  ║
+# ║                         EVA UNIT-01 THEME                                     ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+# Get network interface (auto-detect)
+INTERFACE=$(ip -o link show | awk -F': ' '{print $2}' | grep -vE '^(lo|docker|virbr|br-)' | head -1)
+
+if [ -z "$INTERFACE" ]; then
+    INTERFACE="eth0"
+fi
+
+# Read bytes from /proc/net/dev
+read_rx() { cat /sys/class/net/$INTERFACE/statistics/rx_bytes 2>/dev/null || echo 0; }
+read_tx() { cat /sys/class/net/$INTERFACE/statistics/tx_bytes 2>/dev/null || echo 0; }
+
+# Get previous values from temp file or initialize
+PREV_RX=$(cat /tmp/i3_net_prev_rx 2>/dev/null || echo 0)
+PREV_TX=$(cat /tmp/i3_net_prev_tx 2>/dev/null || echo 0)
+PREV_TIME=$(cat /tmp/i3_net_prev_time 2>/dev/null || echo 0)
+
+# Get current values
+CUR_RX=$(read_rx)
+CUR_TX=$(read_tx)
+CUR_TIME=$(date +%s)
+
+# Save current values for next run
+echo "$CUR_RX" > /tmp/i3_net_prev_rx
+echo "$CUR_TX" > /tmp/i3_net_prev_tx
+echo "$CUR_TIME" > /tmp/i3_net_prev_time
+
+# Calculate speed (bytes per second)
+TIME_DIFF=$((CUR_TIME - PREV_TIME))
+if [ "$TIME_DIFF" -gt 0 ]; then
+    RX_SPEED=$(( (CUR_RX - PREV_RX) / TIME_DIFF ))
+    TX_SPEED=$(( (CUR_TX - PREV_TX) / TIME_DIFF ))
+else
+    RX_SPEED=0
+    TX_SPEED=0
+fi
+
+# Format speed
+format_speed() {
+    local speed=$1
+    if [ "$speed" -ge 1073741824 ]; then
+        echo "$(awk "BEGIN {printf \"%.1fG\", $speed/1073741824}")"
+    elif [ "$speed" -ge 1048576 ]; then
+        echo "$(awk "BEGIN {printf \"%.1fM\", $speed/1048576}")"
+    elif [ "$speed" -ge 1024 ]; then
+        echo "$(awk "BEGIN {printf \"%.0fk\", $speed/1024}")"
+    else
+        echo "${speed}B"
+    fi
+}
+
+RX_STR=$(format_speed $RX_SPEED)
+TX_STR=$(format_speed $TX_SPEED)
+
+# Colors
+COLOR_NORMAL="#5D9CEC"
+COLOR_HIGH="#FFB347"
+COLOR_VERY_HIGH="#FF5577"
+
+# Determine color based on speed
+TOTAL_SPEED=$((RX_SPEED + TX_SPEED))
+if [ "$TOTAL_SPEED" -ge 104857600 ]; then  # 100MB/s
+    COLOR="$COLOR_VERY_HIGH"
+elif [ "$TOTAL_SPEED" -ge 10485760 ]; then  # 10MB/s
+    COLOR="$COLOR_HIGH"
+else
+    COLOR="$COLOR_NORMAL"
+fi
+
+echo "  ↓${RX_STR} ↑${TX_STR}"
+echo "↓${RX_STR} ↑${TX_STR}"
+echo "$COLOR"

@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                    EVA UNIT-01 PICOM ANIMATIONS INSTALLER                     ║
+# ║                         Install picom-simpleanims from AUR                    ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+echo "╔══════════════════════════════════════════════════════════════╗"
+echo "║     EVA Unit-01: Picom Animations Installer                  ║"
+echo "╚══════════════════════════════════════════════════════════════╝"
+echo ""
+
+# Check if paru is available
+if ! command -v paru &> /dev/null; then
+    echo "❌ paru not found. Please install paru first:"
+    echo "   git clone https://aur.archlinux.org/paru.git"
+    echo "   cd paru && makepkg -si"
+    exit 1
+fi
+
+echo "📦 Installing picom-simpleanims-git from AUR..."
+echo ""
+
+# Install picom-simpleanims-git
+paru -S --noconfirm picom-simpleanims-git
+
+if [ $? -eq 0 ]; then
+    echo ""
+    echo "✅ Installation complete!"
+    echo ""
+    echo "📝 To enable animations:"
+    echo "   1. Edit ~/.config/picom/picom.conf"
+    echo "   2. Uncomment the animation settings (remove the # symbol)"
+    echo "   3. Restart picom: killall picom && picom --config ~/.config/picom/picom.conf &"
+    echo ""
+    echo "🎬 Available animations:"
+    echo "   - zoom: Windows zoom in/out"
+    echo "   - fade: Simple fade in/out"
+    echo "   - slide-up/down/left/right: Slide animations"
+    echo "   - fly-in: Fly in from edges"
+    echo ""
+    echo "🔄 Restart i3 or run: killall picom && picom --config ~/.config/picom/picom.conf &"
+else
+    echo ""
+    echo "❌ Installation failed. Please check for errors above."
+    exit 1
+fi

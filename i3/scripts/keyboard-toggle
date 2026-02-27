@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                    KEYBOARD LAYOUT SWITCHER                                   ║
+# ║                         EVA UNIT-01 THEME                                     ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+# Get current layout
+get_current() {
+    setxkbmap -query | grep layout | awk '{print $2}' | tr -d ' '
+}
+
+# Toggle between layouts
+toggle_layout() {
+    local current=$(get_current)
+    
+    if [ "$current" == "us" ]; then
+        setxkbmap -layout es
+        notify-send "⌨️ Keyboard Layout" "Switched to ES - Spanish" -t 2000 -u low
+    else
+        setxkbmap -layout us
+        notify-send "⌨️ Keyboard Layout" "Switched to EN - English" -t 2000 -u low
+    fi
+    
+    # Trigger polybar update
+    polybar-msg action 1>/dev/null 2>&1
+}
+
+# Show current layout for polybar
+show_layout() {
+    local current=$(get_current)
+    case $current in
+        "us") echo "EN" ;;
+        "es") echo "ES" ;;
+        *) echo "US" ;;
+    esac
+}
+
+# Main
+case "$1" in
+    --toggle)
+        toggle_layout
+        ;;
+    --next)
+        toggle_layout
+        ;;
+    --show)
+        show_layout
+        ;;
+    --us)
+        setxkbmap -layout us
+        notify-send "⌨️ Keyboard Layout" "Switched to EN - English" -t 2000
+        polybar-msg action 1>/dev/null 2>&1
+        ;;
+    --es)
+        setxkbmap -layout es
+        notify-send "⌨️ Keyboard Layout" "Switched to ES - Spanish" -t 2000
+        polybar-msg action 1>/dev/null 2>&1
+        ;;
+    *)
+        echo "Usage: $0 {--toggle|--next|--show|--us|--es}"
+        exit 1
+        ;;
+esac

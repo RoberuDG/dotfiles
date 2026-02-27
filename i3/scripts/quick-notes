@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                         QUICK NOTES WIDGET                                    ║
+# ║                         EVA UNIT-01 THEME                                     ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+NOTES_FILE="$HOME/.config/i3/quick-notes"
+
+# Initialize notes file if not exists
+touch "$NOTES_FILE"
+
+case "$1" in
+    --add)
+        # Add note from clipboard
+        NOTE=$(xclip -selection clipboard -o 2>/dev/null)
+        if [ -n "$NOTE" ]; then
+            TIMESTAMP=$(date +"%d/%m %H:%M")
+            echo "[$TIMESTAMP] $NOTE" >> "$NOTES_FILE"
+            notify-send "Quick Notes" "Note added" -t 2000
+        fi
+        ;;
+    --show)
+        # Show notes with rofi
+        if [ -s "$NOTES_FILE" ]; then
+            SELECTED=$(cat "$NOTES_FILE" | rofi -dmenu -i -p "Quick Notes" -config ~/.config/rofi/config.rasi)
+            if [ -n "$SELECTED" ]; then
+                echo "$SELECTED" | xclip -selection clipboard
+                notify-send "Quick Notes" "Copied to clipboard" -t 2000
+            fi
+        else
+            notify-send "Quick Notes" "No notes yet" -t 2000
+        fi
+        ;;
+    --clear)
+        # Clear all notes
+        > "$NOTES_FILE"
+        notify-send "Quick Notes" "All notes cleared" -t 2000
+        ;;
+    --count)
+        # Show count for status bar
+        COUNT=$(wc -l < "$NOTES_FILE" 2>/dev/null || echo 0)
+        if [ "$COUNT" -gt 0 ]; then
+            echo "  $COUNT notes"
+            echo ""
+            echo "#44FF88"
+        else
+            echo "  No notes"
+            echo ""
+            echo "#6c7086"
+        fi
+        ;;
+    *)
+        echo "Usage: $0 {--add|--show|--clear|--count}"
+        exit 1
+        ;;
+esac

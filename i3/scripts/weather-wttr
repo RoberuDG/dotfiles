@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                    WEATHER SCRIPT - Pola de Siero                             ║
+# ║                         EVA UNIT-01 THEME                                     ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+# Colors
+COLOR_NORMAL="#B4BEFE"
+COLOR_WARM="#FFB347"
+COLOR_HOT="#FF5577"
+COLOR_COLD="#44FF88"
+COLOR_VERY_COLD="#5D9CEC"
+
+# Get weather data from wttr.in (URL encode the city name)
+WEATHER_DATA=$(curl -s "wttr.in/Pola%20de%20Siero?format=j1" 2>/dev/null)
+
+if [ $? -ne 0 ] || [ -z "$WEATHER_DATA" ]; then
+    echo "  N/A"
+    echo "  N/A"
+    echo "$COLOR_NORMAL"
+    exit 0
+fi
+
+# Extract data
+TEMP=$(echo "$WEATHER_DATA" | jq -r '.current_condition[0].temp_C')
+FEELS_LIKE=$(echo "$WEATHER_DATA" | jq -r '.current_condition[0].FeelsLikeC')
+CONDITION=$(echo "$WEATHER_DATA" | jq -r '.current_condition[0].weatherDesc[0].value')
+WIND_SPEED=$(echo "$WEATHER_DATA" | jq -r '.current_condition[0].windspeedKmph')
+WIND_DIR=$(echo "$WEATHER_DATA" | jq -r '.current_condition[0].winddir16Point')
+HUMIDITY=$(echo "$WEATHER_DATA" | jq -r '.current_condition[0].humidity')
+
+# Weather icons
+case $(echo "$CONDITION" | tr '[:upper:]' '[:lower:]') in
+    *sun*|*clear*)
+        ICON=" "
+        ;;
+    *cloud*)
+        ICON=" "
+        ;;
+    *rain*|*drizzle*)
+        ICON=" "
+        ;;
+    *thunder*)
+        ICON=" "
+        ;;
+    *snow*|*ice*)
+        ICON=" "
+        ;;
+    *fog*|*mist*)
+        ICON=" "
+        ;;
+    *)
+        ICON=" "
+        ;;
+esac
+
+# Color based on temperature
+TEMP_INT=${TEMP%.*}
+if [ "$TEMP_INT" -gt 30 ]; then
+    COLOR="$COLOR_HOT"
+elif [ "$TEMP_INT" -gt 20 ]; then
+    COLOR="$COLOR_WARM"
+elif [ "$TEMP_INT" -ge 10 ]; then
+    COLOR="$COLOR_NORMAL"
+elif [ "$TEMP_INT" -ge 0 ]; then
+    COLOR="$COLOR_COLD"
+else
+    COLOR="$COLOR_VERY_COLD"
+fi
+
+# Output for i3blocks
+echo "${ICON}${TEMP}°C (${FEELS_LIKE}°C)"  # Full text
+echo "${TEMP}°C"                            # Short text
+echo "$COLOR"                               # Color

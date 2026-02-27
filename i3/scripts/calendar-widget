@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                         CALENDAR WIDGET                                       ║
+# ║                         EVA UNIT-01 THEME                                     ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+# Get current date/time
+DATE=$(date +"%d/%m/%Y")
+TIME=$(date +"%H:%M")
+DAY=$(date +"%A")
+
+# Check for events today (from calendar file if exists)
+CALENDAR_FILE="$HOME/.config/i3/calendar"
+EVENTS=""
+if [ -f "$CALENDAR_FILE" ]; then
+    TODAY=$(date +"%d/%m")
+    EVENTS=$(grep "$TODAY" "$CALENDAR_FILE" 2>/dev/null | head -3)
+fi
+
+# Format output
+if [ -n "$EVENTS" ]; then
+    echo "  $DATE - $TIME "
+    echo "$DATE"
+    echo "#FFB347"  # Orange for events
+else
+    echo "  $DATE - $TIME"
+    echo "$DATE"
+    echo "#B4BEFE"  # Normal color
+fi

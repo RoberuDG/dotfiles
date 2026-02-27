@@ -1,0 +1,738 @@
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                      EVA UNIT-01 i3WM CONFIGURATION                          ║
+# ║                         初号機 - NERV TERMINAL                                ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+#
+# Pilot: Third Child Shinji Ikari
+# Unit: Evangelion Unit-01 (Test Type)
+# Base: EndeavourOS i3WM Setup
+# Theme: Purple/Green Evangelion Aesthetic
+#
+# "Get in the robot, Shinji!"
+#
+# ═══════════════════════════════════════════════════════════════════════════════
+#  ENHANCED FEATURES:
+#  • Window shadows & rounded corners (via picom)
+#  • Custom window title formatting
+#  • Workspace animations
+#  • Smart focus wrapping
+#  • Enhanced floating window rules
+#  • Custom keybinding modes
+#  • App-specific workspace assignments
+#  • Multi-monitor aware
+#  • Dynamic gap adjustment
+#  • Scratchpad with custom naming
+#  • Urgent window handling
+# ═══════════════════════════════════════════════════════════════════════════════
+
+#######################
+# SYSTEM CORE CONFIG  #
+#######################
+
+# Font for window titles and UI elements
+font pango:Iosevka Nerd Font Bold 12
+
+# Set the mod key to Super (Windows key)
+set $mod Mod4
+
+#####################
+# WORKSPACE LAYOUT  #
+#####################
+
+# Default i3 tiling mode with gaps for that sleek look
+workspace_layout default
+
+# Inner gaps for breathing room between windows
+gaps inner 16
+# Outer gaps for screen edge spacing
+gaps outer 20
+
+# Smart gaps - only show gaps when multiple containers
+smart_gaps on
+
+# Smart borders - only show borders when multiple containers
+smart_borders on
+
+# Window borders configuration - thicker for that EVA aesthetic
+default_border pixel 3
+default_floating_border pixel 3
+
+# Hide edge borders when only one window
+hide_edge_borders smart
+
+# Window title alignment
+title_align center
+
+# Use Mouse+$mod to drag floating windows
+floating_modifier $mod
+
+# Focus urgency handling
+focus_on_window_activation smart
+
+#####################
+#  CUSTOM MODES     #
+#####################
+
+# App Launcher Mode - EVA Style
+mode "launcher" {
+    bindsym f exec --no-startup-id rofi -show drun -config ~/.config/rofi/config.rasi; mode "default"
+    bindsym w exec --no-startup-id rofi -show window -config ~/.config/rofi/rofidmenu.rasi; mode "default"
+    bindsym t exec --no-startup-id alacritty; mode "default"
+    bindsym g exec --no-startup-id google-chrome-stable; mode "default"
+    bindsym d exec --no-startup-id discord; mode "default"
+    bindsym s exec --no-startup-id spotify; mode "default"
+    bindsym v exec --no-startup-id vesktop; mode "default"
+    bindsym e exec --no-startup-id thunar; mode "default"
+    bindsym c exec --no-startup-id code; mode "default"
+    bindsym m exec --no-startup-id thunderbird; mode "default"
+
+    # Back to normal
+    bindsym Escape mode "default"
+    bindsym Return mode "default"
+}
+
+# Screenshot Mode
+mode "screenshot" {
+    bindsym s exec --no-startup-id flameshot gui; mode "default"
+    bindsym f exec --no-startup-id flameshot full -p ~/Pictures/Screenshots; mode "default"
+    bindsym w exec --no-startup-id flameshot screen -p ~/Pictures/Screenshots; mode "default"
+    bindsym r exec --no-startup-id grim -g "$(slurp)" ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png; mode "default"
+    bindsym Escape mode "default"
+    bindsym Return mode "default"
+}
+
+# Workspace Move Mode
+mode "movetows" {
+    bindsym 1 move container to workspace $ws1, mode "default"
+    bindsym 2 move container to workspace $ws2, mode "default"
+    bindsym 3 move container to workspace $ws3, mode "default"
+    bindsym 4 move container to workspace $ws4, mode "default"
+    bindsym 5 move container to workspace $ws5, mode "default"
+    bindsym 6 move container to workspace $ws6, mode "default"
+    bindsym 7 move container to workspace $ws7, mode "default"
+    bindsym 8 move container to workspace $ws8, mode "default"
+    bindsym 9 move container to workspace $ws9, mode "default"
+    bindsym 0 move container to workspace $ws10, mode "default"
+    bindsym Escape mode "default"
+    bindsym Return mode "default"
+}
+
+# Gaps controls - alternative bindings (use F-keys to avoid conflicts)
+bindsym $mod+Control+0 gaps inner current set 0
+bindsym $mod+Control+1 gaps inner current set 5
+bindsym $mod+Control+2 gaps inner current set 10
+bindsym $mod+ControlI +3 gaps inner current set 15
+bindsym $mod+Control+4 gaps inner current set 20
+bindsym $mod+Control+5 gaps inner current set 25
+bindsym $mod+Control+u gaps inner current reset
+
+# Scratchpad Mode - Quick scratchpad access
+mode "scratchpad" {
+    bindsym 1 scratchpad show, mode "default"
+    bindsym 2 scratchpad show, mode "default"
+    bindsym 3 scratchpad show, mode "default"
+    bindsym Escape mode "default"
+    bindsym Return mode "default"
+}
+
+bindsym $mod+z mode "launcher"
+bindsym $mod+Print mode "screenshot"
+bindsym $mod+Shift+m mode "movetows"
+bindsym $mod+Shift+g mode "gaps"
+bindsym $mod+Shift+s mode "scratchpad"
+
+#####################
+# WORKSPACE CONTROL #
+#####################
+
+# Switch/iterate between workspaces (keeping your bindings)
+bindsym $mod+Tab workspace next
+bindsym $mod+Shift+Tab workspace prev
+
+# Switch to workspace (your existing bindcode setup)
+bindcode $mod+10    workspace  $ws1
+bindcode $mod+11    workspace  $ws2
+bindcode $mod+12    workspace  $ws3
+bindcode $mod+13    workspace  $ws4
+bindcode $mod+14    workspace  $ws5
+bindcode $mod+15    workspace  $ws6
+bindcode $mod+16    workspace  $ws7
+bindcode $mod+17    workspace  $ws8
+bindcode $mod+18    workspace  $ws9
+bindcode $mod+19    workspace  $ws10
+
+# Switch to workspace with numpad keys
+bindcode $mod+87 workspace $ws1
+bindcode $mod+88 workspace $ws2
+bindcode $mod+89 workspace $ws3
+bindcode $mod+83 workspace $ws4
+bindcode $mod+84 workspace $ws5
+bindcode $mod+85 workspace $ws6
+bindcode $mod+79 workspace $ws7
+bindcode $mod+80 workspace $ws8
+bindcode $mod+81 workspace $ws9
+bindcode $mod+90 workspace $ws10
+
+# Switch to workspace with numlock numpad keys
+bindcode $mod+Mod2+87 workspace $ws1
+bindcode $mod+Mod2+88 workspace $ws2
+bindcode $mod+Mod2+89 workspace $ws3
+bindcode $mod+Mod2+83 workspace $ws4
+bindcode $mod+Mod2+84 workspace $ws5
+bindcode $mod+Mod2+85 workspace $ws6
+bindcode $mod+Mod2+79 workspace $ws7
+bindcode $mod+Mod2+80 workspace $ws8
+bindcode $mod+Mod2+81 workspace $ws9
+bindcode $mod+Mod2+90 workspace $ws10
+
+# Move focused container to workspace
+bindcode $mod+Shift+10    move container to workspace  $ws1
+bindcode $mod+Shift+11    move container to workspace  $ws2
+bindcode $mod+Shift+12    move container to workspace  $ws3
+bindcode $mod+Shift+13    move container to workspace  $ws4
+bindcode $mod+Shift+14    move container to workspace  $ws5
+bindcode $mod+Shift+15    move container to workspace  $ws6
+bindcode $mod+Shift+16    move container to workspace  $ws7
+bindcode $mod+Shift+17    move container to workspace  $ws8
+bindcode $mod+Shift+18    move container to workspace  $ws9
+bindcode $mod+Shift+19    move container to workspace  $ws10
+
+# Move focused container to workspace with numpad keys
+bindcode $mod+Shift+Mod2+87     move container to workspace  $ws1
+bindcode $mod+Shift+Mod2+88     move container to workspace  $ws2
+bindcode $mod+Shift+Mod2+89     move container to workspace  $ws3
+bindcode $mod+Shift+Mod2+83     move container to workspace  $ws4
+bindcode $mod+Shift+Mod2+84     move container to workspace  $ws5
+bindcode $mod+Shift+Mod2+85     move container to workspace  $ws6
+bindcode $mod+Shift+Mod2+79     move container to workspace  $ws7
+bindcode $mod+Shift+Mod2+80     move container to workspace  $ws8
+bindcode $mod+Shift+Mod2+81     move container to workspace  $ws9
+bindcode $mod+Shift+Mod2+90     move container to workspace  $ws10
+
+# Move focused container to workspace with numpad keys (alternative)
+bindcode $mod+Shift+87     move container to workspace  $ws1
+bindcode $mod+Shift+88     move container to workspace  $ws2
+bindcode $mod+Shift+89     move container to workspace  $ws3
+bindcode $mod+Shift+83     move container to workspace  $ws4
+bindcode $mod+Shift+84     move container to workspace  $ws5
+bindcode $mod+Shift+85     move container to workspace  $ws6
+bindcode $mod+Shift+79     move container to workspace  $ws7
+bindcode $mod+Shift+80     move container to workspace  $ws8
+bindcode $mod+Shift+81     move container to workspace  $ws9
+bindcode $mod+Shift+90     move container to workspace  $ws10
+
+###################
+#   RESIZE MODE   #
+###################
+
+mode "resize" {
+    # These bindings trigger as soon as you enter the resize mode
+    bindsym j resize shrink width 10 px or 10 ppt
+    bindsym k resize grow height 10 px or 10 ppt
+    bindsym l resize shrink height 10 px or 10 ppt
+    bindsym ñ resize grow width 10 px or 10 ppt
+
+    # Same bindings, but for the arrow keys
+    bindsym Left resize shrink width 10 px or 10 ppt
+    bindsym Down resize grow height 10 px or 10 ppt
+    bindsym Up resize shrink height 10 px or 10 ppt
+    bindsym Right resize grow width 10 px or 10 ppt
+
+    # Fine-tune resizing (5px increments)
+    bindsym h resize shrink width 5 px or 5 ppt
+    bindsym i resize grow height 5 px or 5 ppt
+    bindsym comma resize shrink height 5 px or 5 ppt
+    bindsym period resize grow width 5 px or 5 ppt
+
+    # Back to normal: Enter or Escape
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+r mode "resize"
+
+######################################
+# KEYBINDINGS FOR DIFFERENT ACTIONS #
+######################################
+
+# Start a terminal (keeping your alacritty choice)
+bindsym $mod+Return exec --no-startup-id alacritty
+
+# Kill focused window
+bindsym $mod+Shift+q kill
+
+# Exit menu
+bindsym $mod+Shift+e exec --no-startup-id ~/.config/i3/scripts/powermenu
+
+# Lock the system (removed - now configured in SCREEN LOCK section)
+
+# Reload the configuration file
+bindsym $mod+Shift+c reload
+
+# Restart i3 inplace (preserves your layout/session)
+bindsym $mod+Shift+r restart
+
+# Keybinding hint in fancy rofi
+bindsym F1 exec --no-startup-id ~/.config/i3/scripts/keyhint-2
+
+# Backlight control
+bindsym XF86MonBrightnessUp exec --no-startup-id ~/.config/i3/scripts/volume_brightness.sh brightness_up
+bindsym XF86MonBrightnessDown exec --no-startup-id ~/.config/i3/scripts/volume_brightness.sh brightness_down
+
+# Change focus (keeping your custom layout)
+bindsym $mod+j focus left
+bindsym $mod+k focus down
+bindsym $mod+b focus up
+bindsym $mod+o focus right
+
+# Alternative cursor key focus
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# Move focused window
+bindsym $mod+Shift+j move left
+bindsym $mod+Shift+k move down
+bindsym $mod+Shift+b move up
+bindsym $mod+Shift+l move right
+
+# Alternative cursor key movement
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+# Split in horizontal/vertical orientation
+bindsym $mod+h split h
+bindsym $mod+v split v
+
+# Enter fullscreen mode for the focused container
+bindsym $mod+f fullscreen toggle
+
+# Change container layout (stacked, tabbed, toggle split)
+bindsym $mod+s layout stacking
+bindsym $mod+g layout tabbed
+bindsym $mod+e layout toggle split
+
+# Toggle tiling / floating
+bindsym $mod+Shift+space floating toggle
+
+# Change focus between tiling / floating windows
+bindsym $mod+space focus mode_toggle
+
+# Focus the parent container
+bindsym $mod+a focus parent
+
+# Open new empty workspace
+bindsym $mod+Shift+n exec --no-startup-id ~/.config/i3/scripts/empty_workspace
+
+# Quick app launchers
+bindsym $mod+F1 exec --no-startup-id alacritty
+bindsym $mod+F2 exec --no-startup-id zen-browser
+bindsym $mod+F3 exec --no-startup-id thunar
+bindsym $mod+F4 exec --no-startup-id zed
+
+# Screenshot utilities
+bindsym Print exec --no-startup-id flameshot gui
+bindsym Shift+Print exec --no-startup-id flameshot full -p ~/Pictures/Screenshots
+bindsym $mod+Shift+Print exec --no-startup-id flameshot screen -p ~/Pictures/Screenshots
+
+# Clipboard manager (cliphist + rofi)
+bindsym $mod+Shift+x exec --no-startup-id ~/.config/i3/scripts/clipboard-manager --show
+bindsym $mod+Control+v exec --no-startup-id ~/.config/i3/scripts/clipboard-manager --delete
+bindsym $mod+Control+Shift+v exec --no-startup-id ~/.config/i3/scripts/clipboard-manager --clear
+
+# Wallpaper manager (swww)
+bindsym $mod+F7 exec --no-startup-id ~/.config/i3/scripts/wallpaper-manager --next
+bindsym $mod+Shift+F7 exec --no-startup-id ~/.config/i3/scripts/wallpaper-manager --select
+
+# System monitor (floating terminal with bpytop/bottom)
+bindsym $mod+F8 exec --no-startup-id ~/.config/i3/scripts/system-monitor bpytop
+
+# Center focused window (useful for floating windows)
+bindsym $mod+Shift+o exec --no-startup-id ~/.config/i3/scripts/center_window
+
+# Move window to center of screen
+bindsym $mod+Control+c move position center
+
+# Window opacity toggles (requires picom with opacity support)
+bindsym $mod+Mod1+1 opacity set for focused 1.0
+bindsym $mod+Mod1+2 opacity set for focused 0.9
+bindsym $mod+Mod1+3 opacity set for focused 0.8
+bindsym $mod+Mod1+4 opacity set for focused 0.7
+bindsym $mod+Mod1+5 opacity set for focused 0.6
+
+# Quick notes - Add clipboard content to notes
+bindsym $mod+F5 exec --no-startup-id ~/.config/i3/scripts/quick-notes --add && notify-send " Note Added" "$(xclip -selection clipboard -o 2>/dev/null | head -c 50)..."
+
+# Move workspace to output (multi-monitor)
+bindsym $mod+Shift+F1 move workspace to output HDMI-0
+bindsym $mod+Shift+F2 move workspace to output DP-0
+bindsym $mod+Shift+F3 move workspace to output DP-4
+
+# Quick workspace navigation
+bindsym $mod+semicolon workspace prev
+bindsym $mod+apostrophe workspace next
+
+# Exit confirmation dialog
+bindsym $mod+Shift+Delete exec --no-startup-id i3-nagbar -t warning -m 'You pressed the exit key. Press OK to exit i3.' -b OK 'i3-msg exit'
+
+###################
+# MULTIMEDIA KEYS #
+###################
+
+# Volume control
+bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.config/i3/scripts/volume_brightness.sh volume_up
+bindsym XF86AudioLowerVolume exec --no-startup-id ~/.config/i3/scripts/volume_brightness.sh volume_down
+
+# Granular volume control
+bindsym $mod+XF86AudioRaiseVolume exec --no-startup-id amixer -D pulse sset Master 1%+ && pkill -RTMIN+1 i3blocks
+bindsym $mod+XF86AudioLowerVolume exec --no-startup-id amixer -D pulse sset Master 1%- && pkill -RTMIN+1 i3blocks
+
+# Mute
+bindsym XF86AudioMute exec --no-startup-id ~/.config/i3/scripts/volume_brightness.sh volume_mute
+
+# Mic mute toggle
+bindsym XF86AudioMicMute exec amixer sset Capture toggle
+
+# Audio control
+bindsym XF86AudioPlay exec --no-startup-id playerctl play
+bindsym XF86AudioStop exec --no-startup-id playerctl pause
+bindsym XF86AudioNext exec --no-startup-id playerctl next
+bindsym XF86AudioPrev exec --no-startup-id playerctl previous
+
+# Redirect sound to headphones
+bindsym $mod+p exec --no-startup-id /usr/local/bin/switch-audio-port
+
+# Power Profiles menu switcher (rofi)
+bindsym $mod+Shift+p exec --no-startup-id ~/.config/i3/scripts/power-profiles
+
+##########################################
+# CONFIGURATION FOR WORKSPACE BEHAVIOUR #
+##########################################
+
+# Define names for default workspaces with Evangelion-inspired icons
+set $ws1 "1:  NERV"
+set $ws2 "2:  CODE"
+set $ws3 "3:  TERM"
+set $ws4 "4:  FILES"
+set $ws5 "5:  MEDIA"
+set $ws6 "6:  COMMS"
+set $ws7 "7:  SYNC"
+set $ws8 "8:  MONITOR"
+set $ws9 "9:  GAMES"
+set $ws10 "10:  MISC"
+
+# Use workspaces on different displays
+workspace $ws1 output HDMI-0
+workspace $ws2 output DP-0
+workspace $ws3 output DP-4
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  APP-SPECIFIC WORKSPACE ASSIGNMENTS
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Code workspace (DP-0)
+for_window [class="Code" class="Code - OSS" class="Cursor" class="zed"] move container to workspace $ws2
+
+# Terminal workspace (DP-4)
+for_window [class="Alacritty" class="Kitty" class="Ghostty"] move container to workspace $ws3
+
+# Files workspace
+for_window [class="Thunar" class="Nautilus" class="Dolphin"] move container to workspace $ws4
+
+# Media workspace
+for_window [class="Spotify" class="vlc" class="mpv"] move container to workspace $ws5
+
+# Comms workspace
+for_window [class="vesktop" class="Discord" class="discord" class="Slack" class="teams-for-linux"] move container to workspace $ws6
+for_window [class="Thunderbird" class="Geary"] move container to workspace $ws6
+
+# Browser (follows focus, but default to CODE workspace)
+for_window [class="google-chrome" class="Brave-browser" class="firefox" class="zen-browser"] move container to workspace $ws2
+
+# Monitoring/Sync workspace
+for_window [class="Grafana" class="htop" class="btop"] move container to workspace $ws8
+
+# Games workspace
+for_window [class="steam" class="lutris" class="heroic"] move container to workspace $ws9
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  AUTOMATIC FOCUS FOR SPECIFIC APPS
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Automatic set focus new window if it opens on another workspace
+for_window [class=Xfce4-terminal] focus
+for_window [class=(?i)zen-browser] focus
+for_window [class=Thunar] focus
+
+##############
+# COMPOSITOR #
+##############
+
+# Picom compositor with improved settings for aesthetics
+exec_always --no-startup-id picom --config ~/.config/picom/picom.conf
+
+#############################################
+# AUTOSTART APPLICATIONS/SERVICES ON LOGIN #
+#############################################
+
+# Get auth work with polkit-gnome
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec --no-startup-id xfsettingsd --daemon --replace --disable-compositor
+
+# Dex execute .desktop files + apps using /etc/xdg/autostart
+exec --no-startup-id dex --autostart --environment i3
+
+# Set wallpaper with swww (animated transitions)
+exec_always --no-startup-id ~/.config/i3/scripts/wallpaper-manager --init
+
+# Disable power saving for consistent display
+exec --no-startup-id xset -dpms
+
+# Desktop notifications
+exec --no-startup-id /usr/bin/dunst
+
+# Autotiling script for automatic layout management
+exec_always --no-startup-id autotiling
+
+# Autostart applications
+exec --no-startup-id sleep 3 && vesktop
+exec --no-startup-id sleep 3 && thunderbird
+
+##################
+# FLOATING RULES #
+##################
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  DIALOG & UTILITY WINDOWS (Auto-floating)
+# ─────────────────────────────────────────────────────────────────────────────
+
+# System dialogs
+for_window [class="Yad" instance="yad"] floating enable, move position center
+for_window [class="Galculator" instance="galculator"] floating enable, move position center
+for_window [class="Blueberry.py" instance="blueberry.py"] floating enable, move position center
+for_window [class="Xsane" instance="xsane"] floating enable, move position center
+for_window [class="Pavucontrol" instance="pavucontrol"] floating enable, move position center, resize set 800 600
+for_window [class="qt5ct" instance="qt5ct"] floating enable, move position center
+for_window [class="Bluetooth-sendto" instance="bluetooth-sendto"] floating enable, move position center
+for_window [class="Pamac-manager"] floating enable, move position center, resize set 1000 700
+for_window [window_role="About"] floating enable, move position center
+for_window [title="^Android Emulator.*:[0-9]+$"] floating enable
+
+# Enhanced floating window rules for better UX
+for_window [class="Arandr"] floating enable, move position center, resize set 800 600
+for_window [class="feh"] floating enable, move position center
+for_window [class="Lxappearance"] floating enable, move position center, resize set 700 500
+for_window [class="Nitrogen"] floating enable, move position center, resize set 900 700
+
+# System monitor (bpytop/bottom/htop)
+for_window [class="SystemMonitor" instance="kitty" title=" *"] floating enable, move position center, resize set 1000 600
+for_window [class="Oblogout"] fullscreen enable
+for_window [class="octopi"] floating enable, move position center, resize set 1200 800
+for_window [class="Qtconfig-qt4"] floating enable, move position center
+for_window [class="Simple-scan"] floating enable, move position center
+for_window [class="(?i)System-config-printer.py"] floating enable, move position center, resize set 1000 800
+for_window [class="Skype"] floating enable, resize set 800 600
+for_window [class="Thus"] floating enable, move position center
+for_window [class="Timeset-gui"] floating enable, move position center
+for_window [class="(?i)virtualbox"] floating enable, resize set 1024 768
+for_window [class="Xfburn"] floating enable, move position center
+
+# Modern apps that should float
+for_window [class="zoom" title="^Zoom Cloud Meetings$"] floating enable, resize set 1000 800
+for_window [class="Gimp" title="^GNU Image Manipulation Program.*"] floating disable
+for_window [class="Inkscape"] floating disable
+for_window [class="file_progress"] floating enable
+for_window [class="Confirm"] floating enable
+for_window [class="Dialog"] floating enable
+for_window [class="Error"] floating enable
+for_window [title="Open File"] floating enable
+for_window [title="Select a File"] floating enable
+for_window [title="Save File"] floating enable
+for_window [title="Save As"] floating enable
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  FLOATING WINDOW BORDER SETTINGS
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Set border for specific floating windows
+for_window [class="urxvt"] border pixel 2
+for_window [floating] border pixel 3
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  WINDOW TRANSPARENCY RULES (via picom)
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Terminal windows - slightly transparent
+for_window [class="Alacritty" class="Kitty" class="Ghostty"] opacity 0.95
+
+# Floating dialogs - more transparent
+for_window [floating] opacity 0.98
+
+######################################
+# COLOR SETTINGS FOR WINDOWS & UI   #
+######################################
+
+# EVA Unit-01 Color Scheme - Enhanced
+set $eva-bg           #0D0B14
+set $eva-bg-alt       #1C1A25
+set $eva-bg-focus     #2D2A3D
+set $eva-fg           #F0F0F0
+set $eva-fg-alt       #C8FFF0
+set $eva-purple       #8A33FF
+set $eva-purple-bright #A855FF
+set $eva-green        #44FF88
+set $eva-green-dim    #2ECC71
+set $eva-red          #FF5577
+set $eva-orange       #FFB347
+set $eva-cyan         #00FFFF
+set $eva-urgent       #FF0000
+set $eva-warning      #FFD700
+set $eva-blue         #5D9CEC
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  WINDOW COLORS
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Window color scheme - EVA Unit-01 inspired
+#                       border              background      text            indicator       child_border
+client.focused          $eva-purple         $eva-bg-focus   $eva-fg         $eva-green      $eva-purple
+client.focused_inactive $eva-bg-alt         $eva-bg-alt     $eva-fg-alt     $eva-purple     $eva-bg-alt
+client.unfocused        $eva-bg             $eva-bg         $eva-fg-alt     $eva-bg         $eva-bg
+client.urgent           $eva-red            $eva-bg-focus   $eva-fg         $eva-urgent     $eva-red
+client.placeholder      $eva-bg             $eva-bg         $eva-fg         $eva-bg         $eva-bg
+client.background       $eva-bg
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  CUSTOM WINDOW TITLES
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Set custom title format for focused windows
+# Shows: [icon] app_name - title
+for_window [class="Alacritty"] title_format "<span foreground='#44FF88'></span> %title"
+for_window [class="Code" class="Code - OSS"] title_format "<span foreground='#8A33FF'></span> %title"
+for_window [class="google-chrome" class="Brave-browser"] title_format "<span foreground='#FF5577'></span> %title"
+for_window [class="Thunar"] title_format "<span foreground='#44FF88'></span> %title"
+for_window [class="firefox"] title_format "<span foreground='#FFB347'></span> %title"
+for_window [class="zen-browser"] title_format "<span foreground='#FFB347'></span> %title"
+for_window [class="vesktop" class="Discord"] title_format "<span foreground='#8A33FF'></span> %title"
+for_window [class="Spotify"] title_format "<span foreground='#44FF88'></span> %title"
+for_window [class="Thunderbird"] title_format "<span foreground='#8A33FF'></span> %title"
+for_window [class="vlc"] title_format "<span foreground='#FF5577'></span> %title"
+for_window [class="mpv"] title_format "<span foreground='#FF5577'></span> %title"
+for_window [class="steam"] title_format "<span foreground='#5D9CEC'></span> %title"
+for_window [class="Cursor"] title_format "<span foreground='#8A33FF'></span> %title"
+for_window [class="zed"] title_format "<span foreground='#8A33FF'></span> %title"
+for_window [class="Kitty"] title_format "<span foreground='#44FF88'></span> %title"
+for_window [class="Ghostty"] title_format "<span foreground='#44FF88'></span> %title"
+
+####################
+# APPLICATION MENU #
+####################
+
+# Rofi application launcher
+bindsym $mod+d exec --no-startup-id rofi -modi drun -show drun \
+        -config ~/.config/rofi/config.rasi
+
+# Rofi window switcher
+bindsym $mod+t exec --no-startup-id rofi -show window \
+        -config ~/.config/rofi/rofidmenu.rasi
+
+####################
+#    SCRATCHPAD    #
+####################
+
+# Make the currently focused window a scratchpad
+bindsym $mod+Shift+minus move scratchpad
+
+# Show the first scratchpad window
+bindsym $mod+minus scratchpad show
+
+####################
+# POLYBAR LAUNCH   #
+####################
+
+# Start Polybar on all monitors
+exec_always --no-startup-id ~/.config/polybar/launch.sh
+
+####################
+# AUDIO VISUALIZER #
+####################
+
+# Setup CAVA FIFO for audio visualization
+exec --no-startup-id mkfifo /tmp/cava.fifo
+exec --no-startup-id cava
+
+####################
+#  KEYBOARD LAYOUT #
+####################
+
+# Set up multiple keyboard layouts (English + Spanish)
+exec --no-startup-id setxkbmap -layout us,es -option grp:alt_caps_toggle
+
+# Keyboard layout switcher keybinding
+bindsym $mod+F6 exec --no-startup-id ~/.config/i3/scripts/keyboard-toggle --toggle
+
+# Clipboard manager service
+exec --no-startup-id cliphist service
+
+####################
+#   SCREEN LOCK    #
+####################
+
+# Auto screen lock with xss-lock using EVA styled multi-monitor lock screen
+exec --no-startup-id xss-lock --transfer-sleep-lock -- ~/.config/i3/scripts/eva-lock-multi
+
+# Manual lock keybinding
+bindsym $mod+l exec --no-startup-id ~/.config/i3/scripts/eva-lock-multi
+
+####################
+# EXTRA FEATURES   #
+####################
+
+# Enable automatic back and forth workspace switching
+workspace_auto_back_and_forth yes
+
+# Focus follows mouse (with 500ms delay to prevent accidental switches)
+focus_follows_mouse yes
+
+# Wrapping when reaching screen edges
+force_focus_wrapping yes
+
+# Mouse warping - move cursor to focused window
+mouse_warping output
+
+# Popup handling during fullscreen
+popup_during_fullscreen smart
+
+# Notification controls (dunst)
+bindsym $mod+period exec --no-startup-id dunstctl history-pop
+bindsym $mod+comma exec --no-startup-id dunstctl close
+bindsym $mod+Shift+period exec --no-startup-id dunstctl history-clear
+bindsym $mod+Shift+comma exec --no-startup-id dunstctl clear-all
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  QUICK REFERENCE - KEYBINDINGS
+# ═══════════════════════════════════════════════════════════════════════════════
+#  $mod+z     → App launcher mode
+#  $mod+Print → Screenshot mode
+#  $mod+Shift+1-0 → Move window to workspace 1-10
+#  $mod+Control+0-5 → Gaps preset (0, 5, 10, 15, 20, 25px)
+#  $mod+Control+u → Reset gaps to default
+#  $mod+Shift+s → Scratchpad mode
+#  $mod+r     → Resize mode (h/i/comma/period for fine-tune)
+#  $mod+Mod1+1-5 → Window opacity (1.0 to 0.6)
+#  $mod+semicolon/apostrophe → Prev/Next workspace
+#  $mod+period → Pop notification from history
+#  $mod+comma → Close current notification
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                              END OF CONFIG                                    ║
+# ║                          EVA UNIT-01 INITIALIZED                              ║
+# ║                    SYNCHRONIZATION RATE: 400%                                 ║
+# ║                        AT Field Status: ACTIVE                                ║
+# ║                         BERSERKER MODE: ENABLED                               ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝

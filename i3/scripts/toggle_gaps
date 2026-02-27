@@ -1,0 +1,17 @@
+#!/bin/bash
+# Toggle gaps on/off for a cleaner look when needed
+
+# Check current gaps setting by reading i3 config
+current_gaps=$(i3-msg -t get_config | grep -o '"inner_gaps"[^,]*' | grep -oP '\d+')
+
+if [[ "$current_gaps" -gt 0 ]]; then
+    # Store current gaps value and set to 0
+    i3-msg "gaps inner current minus $current_gaps"
+    i3-msg "gaps outer current minus $current_gaps"
+    notify-send "Gaps" "Disabled" -t 2000 -u normal
+else
+    # Restore gaps to 16 inner, 20 outer
+    i3-msg "gaps inner current plus 16"
+    i3-msg "gaps outer current plus 20"
+    notify-send "Gaps" "Enabled" -t 2000 -u normal
+fi
