@@ -1,0 +1,23 @@
+#!/bin/bash
+# Clipboard menu using rofi
+
+# Get clipboard history (using cliphist if available, otherwise xclip)
+if command -v cliphist &> /dev/null; then
+    # Using cliphist
+    choice=$(cliphist list | rofi -dmenu -config ~/.config/rofi/config.rasi -p " Clipboard")
+    
+    if [[ -n "$choice" ]]; then
+        echo "$choice" | cliphist decode | wl-copy
+        notify-send "Clipboard" "Selected item pasted" -t 2000
+    fi
+elif command -v xclip &> /dev/null; then
+    # Using xclip - just show current clipboard
+    current=$(xclip -selection clipboard -o 2>/dev/null)
+    if [[ -n "$current" ]]; then
+        notify-send "Clipboard" "$current" -t 3000
+    else
+        notify-send "Clipboard" "Empty" -t 2000
+    fi
+else
+    notify-send "Clipboard" "No clipboard manager installed" -t 2000
+fi

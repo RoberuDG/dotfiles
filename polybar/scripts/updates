@@ -1,0 +1,23 @@
+#!/bin/bash
+# Updates counter for polybar
+
+# Arch/EndeavourOS with pacman
+if command -v checkupdates &> /dev/null; then
+    updates=$(checkupdates 2>/dev/null | wc -l)
+    
+    # AUR updates (if yay is available)
+    if command -v yay &> /dev/null; then
+        aur_updates=$(yay -Qua 2>/dev/null | wc -l)
+        updates=$((updates + aur_updates))
+    fi
+    
+    if [[ $updates -eq 0 ]]; then
+        echo "󰏗 ✓"
+    elif [[ $updates -lt 10 ]]; then
+        echo "󰏗 $updates"
+    else
+        echo "󰏗 $updates"
+    fi
+else
+    echo "󰏗 -"
+fi
