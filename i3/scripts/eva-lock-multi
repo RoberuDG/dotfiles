@@ -1,75 +1,90 @@
 #!/usr/bin/env bash
 # ╔═══════════════════════════════════════════════════════════════════════════════╗
 # ║                    EVA UNIT-01 MULTI-MONITOR LOCK SCREEN                      ║
-# ║                         Blurred Screen Lock                                   ║
+# ║              Captures current screen (with videos) and applies blur           ║
 # ╚═══════════════════════════════════════════════════════════════════════════════╝
 
 # Colors
-COLOR_TEXT="#44FF88"        # Neon Green
-COLOR_DATE="#B4BEFE"        # Lavender
-COLOR_PURPLE="#8A33FF"      # EVA Purple
-COLOR_BG="#0D0B14"          # EVA Dark Background
+COLOR_TEXT="#44FF88"
+COLOR_DATE="#B4BEFE"
+COLOR_PURPLE="#8A33FF"
+COLOR_BG="#0D0B14"
 
-# Get current time and date
 TIME=$(date +"%H:%M:%S")
 DATE=$(date +"%A, %d %B %Y")
 
 # Kill any existing lock screens
 killall i3lock 2>/dev/null
 
-# Get total desktop size from xrandr
+# Get total desktop size
 TOTAL_WIDTH=$(xrandr --query | grep " connected" | awk '{print $3}' | cut -d'+' -f2 | awk -F'x' '{sum+=$1} END {print sum}')
 MAX_HEIGHT=$(xrandr --query | grep " connected" | awk '{print $3}' | awk -F'x' '{print $2}' | sort -n | tail -1)
 
-# Fallback if detection fails
 [ -z "$TOTAL_WIDTH" ] && TOTAL_WIDTH=6400
 [ -z "$MAX_HEIGHT" ] && MAX_HEIGHT=1080
 
 # Create temporary lock image
 LOCK_IMG="/tmp/lock_screen_$$.png"
+BLURRED_IMG="/tmp/lock_blur_$$.png"
 
-# Capture screen and apply blur effect
+# CAPTURE SCREEN FIRST (with videos visible!)
 if command -v scrot &> /dev/null; then
-    # Capture the screen
-    scrot "$LOCK_IMG" 2>/dev/null
+    # Capture immediately - videos are still visible
+    scrot -d 0.1 "$LOCK_IMG" 2>/dev/null
     
     if [ -f "$LOCK_IMG" ]; then
-        # Create blurred version
-        BLURRED_IMG="/tmp/lock_blur_$$.png"
-        convert "$LOCK_IMG" -blur 0x20 "$BLURRED_IMG" 2>/dev/null
+        # Apply STRONG blur (0x30 for more blur)
+        convert "$LOCK_IMG" -blur 0x30 "$BLURRED_IMG" 2>/dev/null
         
-        # Add overlay and text on blurred image
+        # Add dark overlay
         convert "$BLURRED_IMG" \
-            -fill "rgba(13,11,20,0.3)" \
+            -fill "rgba(13,11,20,0.4)" \
             -draw "rectangle 0,0 ${TOTAL_WIDTH},${MAX_HEIGHT}" \
             -gravity center \
-            -pointsize $((TOTAL_WIDTH / 50)) \
+            -pointsize $((TOTAL_WIDTH / 45)) \
             -fill "$COLOR_TEXT" \
             -font "Iosevka Nerd Font-Bold" \
             -annotate +0+0 "$TIME" \
-            -pointsize $((TOTAL_WIDTH / 150)) \
+            -pointsize $((TOTAL_WIDTH / 120)) \
             -fill "$COLOR_DATE" \
-            -font "Iosevka Nerd Font" \
-            -annotate +0+$((MAX_HEIGHT / 18)) "$DATE" \
-            -pointsize $((TOTAL_WIDTH / 200)) \
+            -annotate +0+60 "$DATE" \
             -fill "$COLOR_PURPLE" \
-            -annotate +0+$((MAX_HEIGHT / 9)) "  SYSTEM LOCKED - EVA UNIT-01" \
+            -pointsize $((TOTAL_WIDTH / 200)) \
+            -annotate -$(($TOTAL_WIDTH/25)),$(($MAX_HEIGHT/3)) "🔒 EVA UNIT-01" \
             "$LOCK_IMG" 2>/dev/null
         
         rm -f "$BLURRED_IMG"
-
-        # Lock with blurred screenshot
-        if [ -f "$LOCK_IMG" ]; then
-            i3lock -i "$LOCK_IMG" --ignore-empty-password
-            rm -f "$LOCK_IMG"
-        else
-            i3lock -c "$COLOR_BG" --ignore-empty-password
-        fi
-    else
-        # Fallback to solid color if capture fails
-        i3lock -c "$COLOR_BG" --ignore-empty-password
     fi
-else
-    # scrot not available, use solid color
-    i3lock -c "$COLOR_BG" --ignore-empty-password
 fi
+
+# Fallback if capture failed
+if [ ! -f "$LOCK_IMG" ]; then
+    convert -size ${TOTAL_WIDTH}x${MAX_HEIGHT} xc:"$COLOR_BG" \
+        -gravity center \
+        -pointsize $((TOTAL_WIDTH / 45)) \
+        -fill "$COLOR_TEXT" \
+        -annotate +0+0 "$TIME" \
+        -pointsize $((TOTAL_WIDTH / 120)) \
+        -fill "$COLOR_DATE" \
+        -annotate +0+60 "$DATE" \
+        "$LOCK_IMG" 2>/dev/null
+fi
+
+# Lock with the image
+if [ -f "$LOCK_IMG" ]; then
+    i3lock -i "$LOCK_IMG" \
+        --inside-color="$COLOR_BG" \
+        --ring-color="$COLOR_PURPLE" \
+        --line-color="$COLOR_BG" \
+        --separator-color="$COLOR_PURPLE" \
+        --key-hl-color="$COLOR_TEXT" \
+        --ring-ver-color="$COLOR_PURPLE" \
+        --ring-wrong-color="#FF5577" \
+        --verif-color="$COLOR_TEXT" \
+        --wrong-color="#FF5577" \
+        -n 2>/dev/null
+fi
+
+# Cleanup
+sleep 1
+rm -f "$LOCK_IMG" "$BLURRED_IMG" 2>/dev/null

@@ -343,9 +343,22 @@ bindsym $mod+Shift+x exec --no-startup-id ~/.config/i3/scripts/clipboard-manager
 bindsym $mod+Control+v exec --no-startup-id ~/.config/i3/scripts/clipboard-manager --delete
 bindsym $mod+Control+Shift+v exec --no-startup-id ~/.config/i3/scripts/clipboard-manager --clear
 
-# Wallpaper manager (swww)
+# Wallpaper manager (swww) - for static images
 bindsym $mod+F7 exec --no-startup-id ~/.config/i3/scripts/wallpaper-manager --next
 bindsym $mod+Shift+F7 exec --no-startup-id ~/.config/i3/scripts/wallpaper-manager --select
+
+# Video wallpaper (xwinwrap + mpv) - for animated/video wallpapers
+# Using F9 to avoid conflict with keyboard layout toggle (F6)
+bindsym $mod+F9 exec --no-startup-id ~/.config/i3/scripts/video-wallpaper --next
+bindsym $mod+Shift+F9 exec --no-startup-id ~/.config/i3/scripts/video-wallpaper --select
+bindsym $mod+Control+F9 exec --no-startup-id ~/.config/i3/scripts/video-wallpaper --stop
+
+# Video wallpaper with auto color extraction (hellwal/matugen)
+bindsym $mod+Mod1+F9 exec --no-startup-id ~/.config/i3/scripts/video-wallpaper --next-colors
+bindsym $mod+Mod1+Shift+F9 exec --no-startup-id ~/.config/i3/scripts/wallpaper-colors --current
+
+# Apply wallpaper colors to i3 theme (i3bar, window borders)
+bindsym $mod+Mod1+F10 exec --no-startup-id ~/.config/i3/scripts/apply-wallpaper-colors-i3 --apply
 
 # System monitor (floating terminal with bpytop/bottom)
 bindsym $mod+F8 exec --no-startup-id ~/.config/i3/scripts/system-monitor bpytop
@@ -355,13 +368,6 @@ bindsym $mod+Shift+o exec --no-startup-id ~/.config/i3/scripts/center_window
 
 # Move window to center of screen
 bindsym $mod+Control+c move position center
-
-# Window opacity toggles (requires picom with opacity support)
-bindsym $mod+Mod1+1 opacity set for focused 1.0
-bindsym $mod+Mod1+2 opacity set for focused 0.9
-bindsym $mod+Mod1+3 opacity set for focused 0.8
-bindsym $mod+Mod1+4 opacity set for focused 0.7
-bindsym $mod+Mod1+5 opacity set for focused 0.6
 
 # Quick notes - Add clipboard content to notes
 bindsym $mod+F5 exec --no-startup-id ~/.config/i3/scripts/quick-notes --add && notify-send " Note Added" "$(xclip -selection clipboard -o 2>/dev/null | head -c 50)..."
@@ -467,12 +473,18 @@ for_window [class=Xfce4-terminal] focus
 for_window [class=(?i)zen-browser] focus
 for_window [class=Thunar] focus
 
+# KeePassXC - Start minimized to system tray (no permanent window)
+for_window [class="keepassxc"] move scratchpad
+
 ##############
 # COMPOSITOR #
 ##############
 
-# Picom compositor with improved settings for aesthetics
-exec_always --no-startup-id picom --config ~/.config/picom/picom.conf
+# Picom compositor - OPTIMIZED for video wallpapers
+# - use-damage = false: Better performance with videos
+# - Excludes mpv/xwinwrap from effects
+# - Faster fade animations
+exec_always --no-startup-id picom --config ~/.config/picom/picom-optimized.conf
 
 #############################################
 # AUTOSTART APPLICATIONS/SERVICES ON LOGIN #
@@ -485,8 +497,16 @@ exec --no-startup-id xfsettingsd --daemon --replace --disable-compositor
 # Dex execute .desktop files + apps using /etc/xdg/autostart
 exec --no-startup-id dex --autostart --environment i3
 
-# Set wallpaper with swww (animated transitions)
-exec_always --no-startup-id ~/.config/i3/scripts/wallpaper-manager --init
+# Set wallpaper with swww (animated transitions) - for static images
+# exec_always --no-startup-id ~/.config/i3/scripts/wallpaper-manager --init
+
+# Set video wallpaper on all monitors (xwinwrap + mpv)
+# Runs on startup and config reload
+exec_always --no-startup-id sleep 2 && ~/.config/i3/scripts/video-wallpaper --next
+
+# Auto-restore video wallpaper on monitor hotplug (optional)
+# Uncomment if you want wallpapers to auto-adjust when plugging/unpluging monitors
+# bindsym XF86DisplayMode exec --no-startup-id ~/.config/i3/scripts/video-wallpaper --next
 
 # Disable power saving for consistent display
 exec --no-startup-id xset -dpms
@@ -575,6 +595,11 @@ for_window [floating] opacity 0.98
 # COLOR SETTINGS FOR WINDOWS & UI   #
 ######################################
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# WALLPAPER-EXTRACTED COLORS (auto-generated)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Original EVA colors (fallback)
 # EVA Unit-01 Color Scheme - Enhanced
 set $eva-bg           #0D0B14
 set $eva-bg-alt       #1C1A25
@@ -657,6 +682,9 @@ bindsym $mod+minus scratchpad show
 # Start Polybar on all monitors
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 
+# Monitor hotplug watcher - restarts polybar on monitor changes
+exec_always --no-startup-id ~/.config/polybar/monitor-watcher.sh
+
 ####################
 # AUDIO VISUALIZER #
 ####################
@@ -677,6 +705,12 @@ bindsym $mod+F6 exec --no-startup-id ~/.config/i3/scripts/keyboard-toggle --togg
 
 # Clipboard manager service
 exec --no-startup-id cliphist service
+
+# Start polybar at startup
+exec --no-startup-id ~/.config/polybar/monitor-hotplug.sh
+
+# Polybar sleep/resume monitor (detects suspend via boot time change)
+exec --no-startup-id ~/.config/polybar/polybar-sleep-monitor.sh &
 
 ####################
 #   SCREEN LOCK    #
@@ -736,3 +770,16 @@ bindsym $mod+Shift+comma exec --no-startup-id dunstctl clear-all
 # ║                        AT Field Status: ACTIVE                                ║
 # ║                         BERSERKER MODE: ENABLED                               ║
 # ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# WALLPAPER-EXTRACTED COLORS (auto-generated - overrides EVA colors)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# WALLPAPER-EXTRACTED COLORS (auto-generated - overrides EVA colors)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# WALLPAPER-EXTRACTED COLORS (BALANCED - overrides EVA colors)
+# ═══════════════════════════════════════════════════════════════════════════════
+include ~/.cache/wallpaper-colors/i3-colors.conf

@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                    EVA UNIT-01 i3 COLOR INTEGRATION                           ║
+# ║         Apply hellwal/matugen colors to i3 window manager theme               ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+COLOR_CACHE="$HOME/.cache/wallpaper-colors"
+I3_COLORS="$HOME/.cache/wallpaper-colors/i3-colors.conf"
+mkdir -p "$COLOR_CACHE"
+
+# Generate i3 config with BALANCED colors (whites + accent colors)
+generate_i3_colors() {
+    echo "🎨 Generating BALANCED i3 colors from wallpaper..."
+    
+    # Get matugen colors (better variety than hellwal)
+    local primary="#8A33FF"
+    local secondary="#44FF88" 
+    local accent="#FF5577"
+    local bg="#0D0B14"
+    local fg="#F0F0F0"  # Keep white for text!
+    
+    if [ -f "$COLOR_CACHE/matugen_colors.sh" ]; then
+        source "$COLOR_CACHE/matugen_colors.sh" 2>/dev/null
+        [ -n "$MATUGEN_PRIMARY" ] && primary="$MATUGEN_PRIMARY"
+        [ -n "$MATUGEN_SECONDARY" ] && secondary="$MATUGEN_TERTIARY"  # Use tertiary for contrast
+        [ -n "$MATUGEN_ERROR" ] && accent="$MATUGEN_ERROR"
+        [ -n "$MATUGEN_SURFACE" ] && bg="$MATUGEN_SURFACE"
+        # Keep fg white for readability!
+    fi
+    
+    # If hellwal colors are too dark/purple, use fallback EVA colors
+    if [[ "$primary" =~ ^#0[0-9A-F] ]] || [[ "$primary" == "#0f1257" ]]; then
+        echo "⚠️  Detected too-dark palette, using balanced fallback..."
+        primary="#8A33FF"    # EVA purple
+        secondary="#44FF88"  # EVA green (contrast!)
+        accent="#FF5577"     # EVA red
+        bg="#0D0B14"
+        fg="#F0F0F0"         # White text
+    fi
+    
+    local bg_alt="${bg}CC"
+    local bg_focus="${bg}99"
+    
+    cat > "$I3_COLORS" << EOCONF
+# ═══════════════════════════════════════════════════════════════════════════════
+# AUTO-GENERATED i3 COLORS FROM WALLPAPER (BALANCED)
+# Generated: $(date)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Wallpaper-extracted colors (BALANCED for readability)
+set \$wall-bg          $bg
+set \$wall-bg-alt      $bg_alt
+set \$wall-bg-focus    $bg_focus
+set \$wall-fg          $fg
+set \$wall-primary     $primary
+set \$wall-secondary   $secondary
+set \$wall-accent      $accent
+set \$wall-warning     #FFB347
+
+# i3 bar colors
+bar {
+    colors {
+        background \$wall-bg
+        statusline \$wall-fg
+        separator  #666666
+
+        focused_workspace     \$wall-primary \$wall-bg \$wall-fg
+        focused_workspace_border \$wall-primary \$wall-primary
+        active_workspace      \$wall-bg-alt \$wall-bg-alt \$wall-fg
+        active_workspace_border \$wall-bg-alt \$wall-bg-alt
+        inactive_workspace    \$wall-bg-focus \$wall-bg-focus \$wall-fg
+        inactive_workspace_border \$wall-bg-focus \$wall-bg-focus
+        urgent_workspace      \$wall-accent \$wall-accent \$wall-fg
+        urgent_workspace_border \$wall-accent \$wall-accent
+        binding_mode          \$wall-warning \$wall-warning #000000
+        binding_mode_border   \$wall-warning \$wall-warning
+    }
+}
+
+# Window colors (BALANCED)
+#                       border              background      text            indicator       child_border
+client.focused          \$wall-primary      \$wall-bg-focus \$wall-fg       \$wall-secondary \$wall-primary
+client.focused_inactive \$wall-bg-alt       \$wall-bg-alt   \$wall-fg       \$wall-primary   \$wall-bg-alt
+client.unfocused        \$wall-bg           \$wall-bg       \$wall-fg       \$wall-bg        \$wall-bg
+client.urgent           \$wall-accent       \$wall-bg-focus \$wall-fg       \$wall-accent    \$wall-accent
+client.placeholder      \$wall-bg           \$wall-bg       \$wall-fg       \$wall-bg        \$wall-bg
+client.background       \$wall-bg
+EOCONF
+
+    echo "✅ i3 colors generated"
+    echo ""
+    echo "Colors:"
+    echo "  Background:  $bg"
+    echo "  Foreground:  $fg (white for readability!)"
+    echo "  Primary:     $primary"
+    echo "  Secondary:   $secondary (contrast color)"
+    echo "  Accent:      $accent"
+}
+
+# Include at END of i3 config
+include_colors_in_i3() {
+    sed -i '/include.*i3-colors/d' ~/.config/i3/config 2>/dev/null
+    
+    echo "" >> ~/.config/i3/config
+    echo "# ═══════════════════════════════════════════════════════════════════════════════" >> ~/.config/i3/config
+    echo "# WALLPAPER-EXTRACTED COLORS (BALANCED - overrides EVA colors)" >> ~/.config/i3/config
+    echo "# ═══════════════════════════════════════════════════════════════════════════════" >> ~/.config/i3/config
+    echo "include ~/.cache/wallpaper-colors/i3-colors.conf" >> ~/.config/i3/config
+    
+    echo "✅ Include added"
+}
+
+# Apply and reload
+apply_and_reload() {
+    local scheme="${1:-vibrant}"
+    
+    # Generate colors from wallpaper
+    ~/.config/i3/scripts/wallpaper-colors -c "$scheme" >/dev/null 2>&1
+    
+    generate_i3_colors
+    include_colors_in_i3
+    
+    sleep 0.5
+    i3-msg reload >/dev/null 2>&1
+    
+    notify-send "🎨 i3 Theme Updated" "Balanced colors applied" -t 2000
+    echo "✅ Done!"
+}
+
+# Show colors
+show_colors() {
+    echo "═══════════════════════════════════════════"
+    echo "🎨 Current i3 Wallpaper Colors"
+    echo "═══════════════════════════════════════════"
+    [ -f "$I3_COLORS" ] && grep "^set \$wall" "$I3_COLORS" || echo "Run: $0 --apply"
+}
+
+case "$1" in
+    --apply|-a) apply_and_reload "${2:-vibrant}" ;;
+    --generate|-g) generate_i3_colors ;;
+    --include|-i) include_colors_in_i3 ;;
+    --show|-s) show_colors ;;
+    --balanced|-b) apply_and_reload "colorful" ;;  # Use colorful scheme for variety
+    *) apply_and_reload "${1:-colorful}" ;;  # Default to colorful for variety
+esac

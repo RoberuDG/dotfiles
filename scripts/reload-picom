@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Quick picom reload with optimized config for video wallpapers
+
+echo "🔄 Reloading picom with optimized config..."
+
+# Kill existing picom
+killall picom 2>/dev/null
+sleep 0.3
+
+# Start with optimized config
+picom --config ~/.config/picom/picom-optimized.conf --daemon
+
+sleep 0.5
+notify-send "🎨 Picom Optimized" "Animations optimized for video wallpapers" -t 2000
+echo "✅ Done!"

@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Apply BALANCED colors to terminals (ghostty, alacritty, etc.)
+
+COLOR_CACHE="$HOME/.cache/wallpaper-colors"
+
+# Use EVA colors for terminals (balanced, not monochromatic)
+apply_eva_terminal() {
+    echo "🎨 Applying BALANCED EVA terminal colors..."
+    
+    # Ghostty config
+    if [ -d "$HOME/.config/ghostty" ]; then
+        cat > "$HOME/.config/ghostty/colors.conf" << EOF
+# EVA Unit-01 Balanced Colors (NOT monochromatic)
+background = #0D0B14
+foreground = #F0F0F0
+
+# Bright, contrasting colors
+color0 = #0D0B14
+color1 = #FF5577
+color2 = #44FF88
+color3 = #FFB347
+color4 = #8A33FF
+color5 = #A855FF
+color6 = #00FFFF
+color7 = #F0F0F0
+color8 = #2D2A3D
+color9 = #FF6B8A
+color10 = #5AFF99
+color11 = #FFC966
+color12 = #9A44FF
+color13 = #BB66FF
+color14 = #33FFFF
+color15 = #FFFFFF
+
+cursor-color = #44FF88
+selection-background = #2D2A3D
+selection-foreground = #F0F0F0

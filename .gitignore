@@ -1,0 +1,8 @@
+# Ignore sensitive or large files
+.DS_Store
+*.swp
+*.swo
+*~
+.cache/
+*.log
+Thumbs.db

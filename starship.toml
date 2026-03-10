@@ -1,0 +1,251 @@
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                    STARSHIP CONFIG - EVA UNIT-01 THEME                        ║
+# ║                       初号機 - NERV TERMINAL                                  ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+# Based on Catppuccin Powerline with EVA Unit-01 colors
+
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = """
+[](eva-purple)\
+$directory\
+[](fg:eva-purple bg:eva-lavender)\
+$c\
+$git_branch\
+$git_status\
+$nodejs\
+$python\
+$rust\
+$golang\
+[](fg:eva-lavender bg:eva-teal)\
+$time\
+[](fg:eva-teal bg:eva-mauve)\
+$username\
+[](fg:eva-mauve bg:eva-mauve)\
+$os\
+[ ](eva-mauve)\
+$line_break\
+$character"""
+
+right_format = """
+$cmd_duration\
+[](eva-lavender)\
+$memory_usage\
+[ ](eva-lavender)"""
+
+continuation_prompt = '[▶▶ ](bold purple)'
+
+palette = 'eva_unit_01'
+add_newline = true
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  EVA UNIT-01 COLOR PALETTE
+# ═══════════════════════════════════════════════════════════════════════════════
+[palettes.eva_unit_01]
+# EVA Purple
+eva-purple = "#8A33FF"
+eva-purple-bright = "#A855FF"
+# EVA Green
+eva-green = "#44FF88"
+eva-green-dim = "#2ECC71"
+eva-teal = "#00FFFF"
+# Accent colors
+eva-red = "#FF5577"
+eva-orange = "#FFB347"
+eva-yellow = "#FFD700"
+eva-blue = "#5D9CEC"
+eva-lavender = "#B4BEFE"
+eva-mauve = "#CBA6F7"
+# Background/Foreground
+eva-fg = "#F0F0F0"
+eva-bg = "#0D0B14"
+eva-bg-alt = "#1C1A25"
+eva-bg-focus = "#2D2A3D"
+eva-crust = "#11111B"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  OS ICONS
+# ═══════════════════════════════════════════════════════════════════════════════
+[os]
+disabled = false
+style = "bg:eva-mauve fg:eva-crust"
+format = '[$symbol](fg:eva-crust bg:eva-mauve)'
+
+[os.symbols]
+EndeavourOS = " "
+Arch = "󰣇 "
+Ubuntu = "󰕈 "
+Debian = "󰣚 "
+Fedora = " "
+NixOS = " "
+Gentoo = "󰣨 "
+openSUSE = " "
+Linux = "󰌽 "
+Macos = "󰀵 "
+Windows = " "
+Android = " "
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  USERNAME
+# ═══════════════════════════════════════════════════════════════════════════════
+[username]
+show_always = true
+style_user = "bg:eva-mauve fg:eva-crust"
+style_root = "bg:eva-red fg:eva-crust"
+format = '[ $user ]($style)'
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  DIRECTORY
+# ═══════════════════════════════════════════════════════════════════════════════
+[directory]
+style = "bg:eva-purple fg:eva-crust"
+format = "[ $path ]($style)"
+truncation_length = 4
+truncation_symbol = "…/"
+read_only = " 󰌾"
+read_only_style = "bold eva-red"
+
+[directory.substitutions]
+"Documents" = " "
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
+"Videos" = " "
+"Developer" = " "
+"Projects" = " "
+".config" = " "
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  GIT
+# ═══════════════════════════════════════════════════════════════════════════════
+[git_branch]
+symbol = " "
+style = "bg:eva-lavender fg:eva-crust"
+format = '[[ $symbol$branch ](fg:eva-crust bg:eva-lavender)]($style)'
+
+[git_commit]
+commit_hash_length = 7
+format = '[\($hash$tag\)]($style)'
+tag_symbol = '  '
+
+[git_status]
+style = "bg:eva-lavender fg:eva-crust"
+format = '[[($all_status$ahead_behind )](fg:eva-crust bg:eva-lavender)]($style)'
+conflicted = "⚔️ "
+ahead = " ${count}"
+behind = " ${count}"
+diverged = ""
+untracked = " ${count}"
+stashed = " "
+modified = " ${count}"
+staged = " ${count}"
+renamed = " ${count}"
+deleted = " ${count}"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  LANGUAGES & RUNTIMES
+# ═══════════════════════════════════════════════════════════════════════════════
+[nodejs]
+symbol = " "
+style = "bg:eva-lavender fg:eva-crust"
+format = '[[ $symbol( $version) ](fg:eva-crust bg:eva-lavender)]($style)'
+detect_extensions = ["js", "ts", "jsx", "tsx", "mjs", "cjs"]
+
+[python]
+symbol = " "
+style = "bg:eva-lavender fg:eva-crust"
+format = '[[ $symbol( $version)(\($virtualenv\)) ](fg:eva-crust bg:eva-lavender)]($style)'
+
+[rust]
+symbol = " "
+style = "bg:eva-lavender fg:eva-crust"
+format = '[[ $symbol( $version) ](fg:eva-crust bg:eva-lavender)]($style)'
+
+[golang]
+symbol = " "
+style = "bg:eva-lavender fg:eva-crust"
+format = '[[ $symbol( $version) ](fg:eva-crust bg:eva-lavender)]($style)'
+
+[c]
+symbol = " "
+style = "bg:eva-lavender fg:eva-crust"
+format = '[[ $symbol( $version) ](fg:eva-crust bg:eva-lavender)]($style)'
+
+[java]
+symbol = " "
+style = "bg:eva-lavender fg:eva-crust"
+format = '[[ $symbol( $version) ](fg:eva-crust bg:eva-lavender)]($style)'
+
+[php]
+symbol = " "
+style = "bg:eva-lavender fg:eva-crust"
+format = '[[ $symbol( $version) ](fg:eva-crust bg:eva-lavender)]($style)'
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  TIME
+# ═══════════════════════════════════════════════════════════════════════════════
+[time]
+disabled = false
+time_format = "%H:%M:%S"
+style = "bg:eva-teal fg:eva-crust"
+format = '[[  $time ](fg:eva-crust bg:eva-teal)]($style)'
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  CHARACTER
+# ═══════════════════════════════════════════════════════════════════════════════
+[line_break]
+disabled = false
+
+[character]
+disabled = false
+success_symbol = '[❯](bold eva-green)'
+error_symbol = '[❯](bold eva-red)'
+vimcmd_symbol = '[❮](bold eva-purple)'
+vimcmd_replace_one_symbol = '[❮](bold eva-orange)'
+vimcmd_replace_symbol = '[❮](bold eva-orange)'
+vimcmd_visual_symbol = '[❮](bold eva-yellow)'
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  COMMAND DURATION
+# ═══════════════════════════════════════════════════════════════════════════════
+[cmd_duration]
+show_milliseconds = true
+format = " in $duration "
+style = "bg:eva-lavender fg:eva-crust"
+disabled = false
+min_time = 1000
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  MEMORY USAGE
+# ═══════════════════════════════════════════════════════════════════════════════
+[memory_usage]
+symbol = "󰍛 "
+style = "bg:eva-lavender fg:eva-crust"
+format = '[[ $symbol$ram ](fg:eva-crust bg:eva-lavender)]($style)'
+disabled = false
+threshold = 75
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  BATTERY (Fixed)
+# ═══════════════════════════════════════════════════════════════════════════════
+[battery]
+disabled = false
+full_symbol = "🔋 "
+charging_symbol = "⚡ "
+discharging_symbol = "💀 "
+
+[[battery.display]]
+threshold = 30
+style = "bold eva-red"
+
+[[battery.display]]
+threshold = 50
+style = "bold eva-orange"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  END OF CONFIG
+# ═══════════════════════════════════════════════════════════════════════════════
+#  EVA UNIT-01 INITIALIZED
+#  SYNCHRONIZATION RATE: 400%
+#  AT Field Status: ACTIVE
+# ═══════════════════════════════════════════════════════════════════════════════

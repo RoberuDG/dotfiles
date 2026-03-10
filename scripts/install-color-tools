@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                    EVA UNIT-01 COLOR TOOLS INSTALLER                          ║
+# ║                    hellwal + matugen combined setup                           ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+echo "🎨 Wallpaper Color Extraction Tools Installer"
+echo "══════════════════════════════════════════════"
+echo ""
+echo "Installing: hellwal + matugen (combined setup)"
+echo ""
+echo "  • hellwal  → Fast color extraction, terminal colors"
+echo "  • matugen  → Material You palettes, GTK/Qt themes"
+echo ""
+echo "══════════════════════════════════════════════"
+echo ""
+
+# Install hellwal
+echo "📦 Installing hellwal..."
+if pip install hellwal --user 2>/dev/null; then
+    echo "✅ hellwal installed"
+else
+    echo "⚠️  hellwal installation failed, trying with pip3..."
+    pip3 install hellwal --user 2>/dev/null && echo "✅ hellwal installed" || echo "❌ hellwal failed"
+fi
+
+# Install matugen
+echo ""
+echo "📦 Installing matugen..."
+if command -v yay &> /dev/null; then
+    yay -S matugen --noconfirm 2>/dev/null && echo "✅ matugen installed (yay)" || {
+        echo "⚠️  yay failed, trying cargo..."
+        cargo install matugen 2>/dev/null && echo "✅ matugen installed (cargo)" || echo "❌ matugen failed"
+    }
+elif command -v paru &> /dev/null; then
+    paru -S matugen --noconfirm 2>/dev/null && echo "✅ matugen installed (paru)" || {
+        echo "⚠️  paru failed, trying cargo..."
+        cargo install matugen 2>/dev/null && echo "✅ matugen installed (cargo)" || echo "❌ matugen failed"
+    }
+elif command -v cargo &> /dev/null; then
+    cargo install matugen 2>/dev/null && echo "✅ matugen installed (cargo)" || echo "❌ matugen failed"
+else
+    echo "❌ No package manager found (need yay, paru, or cargo)"
+fi
+
+echo ""
+echo "══════════════════════════════════════════════"
+echo "🔧 Setting up templates..."
+echo "══════════════════════════════════════════════"
+
+# Create directories
+mkdir -p ~/.config/matugen/templates
+mkdir -p ~/.cache/wallpaper-colors
+mkdir -p ~/.cache/wallpaper-thumbnails
+
+# Verify installations
+echo ""
+echo "══════════════════════════════════════════════"
+echo "📋 Installation Status:"
+echo "══════════════════════════════════════════════"
+
+if command -v hellwal &> /dev/null; then
+    echo "✅ hellwal: $(which hellwal)"
+else
+    echo "❌ hellwal: not found"
+fi
+
+if command -v matugen &> /dev/null; then
+    echo "✅ matugen: $(which matugen)"
+else
+    echo "❌ matugen: not found"
+fi
+
+if command -v ffmpeg &> /dev/null; then
+    echo "✅ ffmpeg: $(which ffmpeg)"
+else
+    echo "⚠️  ffmpeg: not found (needed for video frame extraction)"
+fi
+
+echo ""
+echo "══════════════════════════════════════════════"
+echo "✨ Setup Complete!"
+echo "══════════════════════════════════════════════"
+echo ""
+echo "Usage:"
+echo "  • Automatic (wallpaper + colors):"
+echo "    Press \$mod+Alt+F9"
+echo ""
+echo "  • Manual commands:"
+echo "    ~/.config/i3/scripts/wallpaper-colors -c              # Current wallpaper"
+echo "    ~/.config/i3/scripts/wallpaper-colors -c vibrant      # With vibrant scheme"
+echo "    ~/.config/i3/scripts/wallpaper-colors -c neutral      # With neutral scheme"
+echo "    ~/.config/i3/scripts/wallpaper-colors -s              # Show current colors"
+echo ""
+echo "Matugen color schemes:"
+echo "  vibrant, colorful, neutral, tonal, expressive, monochrome"
+echo ""
+echo "══════════════════════════════════════════════"

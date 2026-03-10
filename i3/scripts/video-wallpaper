@@ -1,0 +1,210 @@
+#!/usr/bin/env bash
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                    EVA UNIT-01 VIDEO WALLPAPER (X11)                          ║
+# ║                    Multi-monitor support with resolution scaling              ║
+# ║                         xwinwrap + mpv based                                  ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+# Use 1080p folder if it exists (better performance), otherwise original
+VIDEO_DIR="$HOME/Pictures/Wallpapers/EVA/1080p"
+[ ! -d "$VIDEO_DIR" ] || [ -z "$(ls -A $VIDEO_DIR 2>/dev/null)" ] && VIDEO_DIR="$HOME/Pictures/Wallpapers/EVA"
+
+PID_DIR="/tmp/video_wallpapers"
+mkdir -p "$PID_DIR"
+
+# Kill existing wallpapers
+kill_wallpapers() {
+    for pid_file in "$PID_DIR"/*.pid; do
+        if [ -f "$pid_file" ]; then
+            OLD_PID=$(cat "$pid_file")
+            if kill -0 "$OLD_PID" 2>/dev/null; then
+                kill "$OLD_PID" 2>/dev/null
+                pkill -P "$OLD_PID" 2>/dev/null
+            fi
+            rm -f "$pid_file"
+        fi
+    done
+    pkill -f "xwinwrap.*mpv" 2>/dev/null
+    sleep 0.5
+    rm -rf "$PID_DIR"
+    mkdir -p "$PID_DIR"
+}
+
+# Set video wallpaper on specific monitor with proper scaling
+set_wallpaper_on_monitor() {
+    local monitor="$1"
+    local resolution="$2"  # e.g., 1920x1080+0+0
+    local video="$3"
+    
+    if [ ! -f "$video" ]; then
+        return 1
+    fi
+    
+    # Kill existing wallpaper for this monitor
+    local pid_file="$PID_DIR/${monitor}.pid"
+    if [ -f "$pid_file" ]; then
+        OLD_PID=$(cat "$pid_file")
+        if kill -0 "$OLD_PID" 2>/dev/null; then
+            kill "$OLD_PID" 2>/dev/null
+            pkill -P "$OLD_PID" 2>/dev/null
+        fi
+        rm -f "$pid_file"
+    fi
+
+    # Start xwinwrap with mpv for this monitor
+    # OPTIMIZED settings:
+    # --hwdec=auto: Hardware decoding (reduces CPU usage)
+    # --vd-lavc-threads=2: Fewer decoding threads (less CPU)
+    # --no-osc --no-osd-bar --osd-level=0: No UI overhead
+    # --input-default-bindings=no: Disable keyboard controls
+    xwinwrap -g "$resolution" -b -nf -ov -sub "%WID" -- \
+        mpv --no-config "--wid=%WID" --loop --no-audio --panscan=1.0 \
+            --hwdec=auto --vd-lavc-threads=2 \
+            --no-osc --no-osd-bar --osd-level=0 \
+            --input-default-bindings=no \
+            "$video" &
+
+    local wp_pid=$!
+    echo "$wp_pid" > "$pid_file"
+}
+
+# Main function to set wallpapers
+main() {
+    case "$1" in
+        --kill|stop)
+            kill_wallpapers
+            notify-send "🖼️ Video Wallpaper" "Stopped all" -t 2000
+            echo "Stopped all video wallpapers"
+            exit 0
+            ;;
+    esac
+    
+    echo "Setting video wallpaper..."
+    
+    # Get all monitors into a temp file
+    local monitor_file=$(mktemp)
+    xrandr --query | grep " connected" | awk '{print $1, $3}' > "$monitor_file"
+    
+    local monitor_count=$(wc -l < "$monitor_file")
+    
+    if [ "$monitor_count" -eq 0 ]; then
+        notify-send "❌ Video Wallpaper" "No monitors detected" -t 3000
+        rm -f "$monitor_file"
+        exit 1
+    fi
+    
+    # Kill existing
+    kill_wallpapers
+    
+    local video="$1"
+    local single_video="${2:-false}"
+    
+    if [ "$single_video" = "true" ] || { [ -n "$video" ] && [ -f "$video" ]; }; then
+        # Same video on all monitors
+        if [ -z "$video" ] || [ ! -f "$video" ]; then
+            video=$(find "$VIDEO_DIR" -type f \( -iname '*.mp4' -o -iname '*.webm' -o -iname '*.mkv' \) | shuf -n 1)
+        fi
+        while read -r monitor resolution; do
+            set_wallpaper_on_monitor "$monitor" "$resolution" "$video"
+            echo "  → $monitor ($resolution): $(basename "$video")"
+        done < "$monitor_file"
+    else
+        # Different random video for each monitor
+        while read -r monitor resolution; do
+            local rand_video=$(find "$VIDEO_DIR" -type f \( -iname '*.mp4' -o -iname '*.webm' -o -iname '*.mkv' \) | shuf -n 1)
+            if [ -n "$rand_video" ]; then
+                set_wallpaper_on_monitor "$monitor" "$resolution" "$rand_video"
+                echo "  → $monitor ($resolution): $(basename "$rand_video")"
+            fi
+        done < "$monitor_file"
+    fi
+    
+    rm -f "$monitor_file"
+
+    sleep 1
+    notify-send "🖼️ Video Wallpaper" "Set on $monitor_count monitor(s)" -t 2000
+    echo "Done!"
+    
+    # Apply colors from first video wallpaper (if enabled)
+    if [ "$APPLY_COLORS" = "true" ]; then
+        echo "🎨 Applying colors from wallpaper..."
+        if [ -n "$video" ] && [ -f "$video" ]; then
+            ~/.config/i3/scripts/wallpaper-colors -v "$video" 2>/dev/null &
+        else
+            # Get first video from the list
+            local first_video=$(find "$VIDEO_DIR" -type f \( -iname '*.mp4' -o -iname '*.webm' -o -iname '*.mkv' \) | head -1)
+            if [ -n "$first_video" ]; then
+                ~/.config/i3/scripts/wallpaper-colors -v "$first_video" 2>/dev/null &
+            fi
+        fi
+    fi
+}
+
+# Option to apply colors automatically (set to "true" to enable)
+APPLY_COLORS="${APPLY_COLORS:-false}"
+
+# Select video with rofi
+select_video() {
+    local video=$(find "$VIDEO_DIR" -type f \( -iname '*.mp4' -o -iname '*.webm' -o -iname '*.mkv' -o -iname '*.gif' \) | \
+        rofi -dmenu -config ~/.config/rofi/config.rasi -p "🎬 Select Video Wallpaper")
+    
+    if [ -n "$video" ] && [ -f "$video" ]; then
+        main "$video" "true"
+    fi
+}
+
+# Entry point
+case "$1" in
+    --select|select)
+        select_video
+        ;;
+    --next|next)
+        main "--next" "false"
+        ;;
+    --next-colors)
+        # Next wallpaper with auto colors
+        APPLY_COLORS="true"
+        main "--next" "false"
+        ;;
+    --same|same)
+        main "" "true"
+        ;;
+    --colors)
+        # Same wallpaper on all monitors with auto colors
+        APPLY_COLORS="true"
+        main "" "true"
+        ;;
+    --reload|reload)
+        main "--reload" "false"
+        ;;
+    --kill|stop)
+        main "--kill"
+        ;;
+    *)
+        if [ -n "$1" ] && [ -f "$1" ]; then
+            main "$1" "true"
+        else
+            main "" "false"
+        fi
+        ;;
+esac
+
+# Auto-restore wallpaper on monitor change (for i3 exec_always)
+auto_restore() {
+    # Check if we have existing wallpapers running
+    local running=$(pgrep -f "xwinwrap.*mpv" | wc -l)
+    if [ "$running" -eq 0 ]; then
+        # No wallpapers running, start fresh
+        main "" "false"
+    else
+        # Check if monitor config changed
+        local current_monitors=$(xrandr --query | grep " connected" | wc -l)
+        local saved_monitors=$(ls "$PID_DIR"/*.pid 2>/dev/null | wc -l)
+        
+        if [ "$current_monitors" -ne "$saved_monitors" ]; then
+            # Monitor config changed, restart wallpapers
+            kill_wallpapers
+            main "" "false"
+        fi
+    fi
+}

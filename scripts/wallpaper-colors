@@ -1,0 +1,151 @@
+#!/usr/bin/env bash
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                    EVA UNIT-01 WALLPAPER COLOR EXTRACTOR                      ║
+# ║              Combined: hellwal + matugen for best of both worlds              ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+VIDEO_DIR="$HOME/Pictures/Wallpapers/EVA"
+THUMBNAIL_DIR="$HOME/.cache/wallpaper-thumbnails"
+COLOR_CACHE="$HOME/.cache/wallpaper-colors"
+WAL_CACHE="$HOME/.cache/wal"
+mkdir -p "$THUMBNAIL_DIR" "$COLOR_CACHE" "$WAL_CACHE"
+
+# Extract frame from video for color analysis
+extract_frame() {
+    local video="$1"
+    local hash=$(basename "$video" | md5sum | cut -c1-8)
+    local output="$THUMBNAIL_DIR/frame_${hash}.png"
+    
+    if [ ! -f "$output" ]; then
+        echo "📹 Extracting frame from video..."
+        ffmpeg -i "$video" -vf "thumbnail" -frames:v 1 -y "$output" 2>/dev/null
+    fi
+    echo "$output"
+}
+
+# Generate colors with hellwal
+generate_hellwal() {
+    local image="$1"
+    
+    echo "🎨 hellwal: Extracting colors..."
+    
+    # Generate JSON and save to wal cache (pywal compatible)
+    hellwal -i "$image" -j > "$WAL_CACHE/colors.json" 2>/dev/null
+    
+    # Also generate shell colors
+    hellwal -i "$image" -j | python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+special = d.get('special', {})
+colors = d.get('colors', {})
+print(f'background=\"{special.get(\"background\", \"#000000\")}\"')
+print(f'foreground=\"{special.get(\"foreground\", \"#ffffff\")}\"')
+for i in range(16):
+    print(f'color{i}=\"{colors.get(f\"color{i}\", \"#000000\")}\"')
+" > "$WAL_CACHE/colors.sh" 2>/dev/null
+    
+    echo "✅ hellwal: Colors saved to $WAL_CACHE"
+}
+
+# Generate colors with matugen
+generate_matugen() {
+    local image="$1"
+    local scheme="${2:-vibrant}"
+    
+    echo "🎨 matugen: Generating Material You palette ($scheme)..."
+    
+    mkdir -p ~/.config/matugen
+    
+    cat > ~/.config/matugen/temp_config.toml << TOML
+[color_schemes]
+dark = "$scheme"
+light = "$scheme"
+
+[templates]
+shell = { path = "~/.config/matugen/templates/shell.hbs", output = "$COLOR_CACHE/matugen_colors.sh" }
+TOML
+    
+    matugen image "$image" --config ~/.config/matugen/temp_config.toml 2>/dev/null
+    
+    echo "✅ matugen: Palette saved to $COLOR_CACHE"
+}
+
+# Combined workflow
+apply_combined() {
+    local image="$1"
+    local matugen_scheme="${2:-vibrant}"
+    
+    echo "═══════════════════════════════════════════"
+    echo "🎨 Combined Color Extraction"
+    echo "═══════════════════════════════════════════"
+    
+    local analysis_file="$image"
+    if [[ "$image" =~ \.(mp4|webm|mkv|avi)$ ]]; then
+        analysis_file=$(extract_frame "$image")
+    fi
+    
+    if [ ! -f "$analysis_file" ]; then
+        echo "❌ Image not found: $analysis_file"
+        exit 1
+    fi
+    
+    echo "Analyzing: $(basename "$analysis_file")"
+    echo ""
+    
+    generate_hellwal "$analysis_file"
+    generate_matugen "$analysis_file" "$matugen_scheme"
+    
+    echo ""
+    echo "═══════════════════════════════════════════"
+    echo "✅ Theme extraction complete!"
+    echo "═══════════════════════════════════════════"
+    
+    notify-send "🎨 Colors Extracted" "From $(basename "$image")" -t 2000
+}
+
+# Apply from current wallpaper
+apply_current() {
+    local scheme="${1:-vibrant}"
+    local current_video=$(ps aux | grep "mpv.*Wallpapers" | grep -v grep | head -1 | \
+        sed -n 's/.*\(\/home.*\.mp4\).*/\1/p')
+    
+    if [ -n "$current_video" ] && [ -f "$current_video" ]; then
+        echo "Current video: $current_video"
+        apply_combined "$current_video" "$scheme"
+    else
+        echo "❌ No video wallpaper playing"
+        exit 1
+    fi
+}
+
+# Show colors
+show_colors() {
+    echo "═══════════════════════════════════════════"
+    echo "🎨 Current Wallpaper Colors"
+    echo "═══════════════════════════════════════════"
+    
+    if [ -f "$WAL_CACHE/colors.json" ]; then
+        echo "hellwal:"
+        cat "$WAL_CACHE/colors.json" | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+s=d.get('special',{})
+print(f\"  Background: {s.get('background')}\")
+print(f\"  Foreground: {s.get('foreground')}\")
+" 2>/dev/null
+    fi
+    
+    if [ -f "$COLOR_CACHE/matugen_colors.sh" ]; then
+        echo "matugen:"
+        source "$COLOR_CACHE/matugen_colors.sh" 2>/dev/null
+        echo "  Primary: ${MATUGEN_PRIMARY:-N/A}"
+        echo "  Secondary: ${MATUGEN_SECONDARY:-N/A}"
+    fi
+}
+
+case "$1" in
+    --video|-v) apply_combined "$2" "${3:-vibrant}" ;;
+    --current|-c) apply_current "${2:-vibrant}" ;;
+    --show|-s) show_colors ;;
+    *) apply_current "${1:-vibrant}" ;;
+esac
