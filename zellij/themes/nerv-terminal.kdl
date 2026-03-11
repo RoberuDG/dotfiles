@@ -4,23 +4,24 @@
 // ╚═══════════════════════════════════════════════════════════════════════════════╝
 // Designed to be DISTINCT from EVA Unit-01 bottom theme
 // Uses Cyan/Amber base instead of Purple/Green
+// Tab selector uses EVA green (#44FF88) from i3 config
 
 themes {
     nerv-terminal {
         // Base colors - darker, more cyberpunk
         fg 147 197 253      // Light blue-gray (text)
         bg 15 23 42         // Deep navy (background)
-        
+
         // Core palette - cyan/amber focused (different from EVA purple/green)
         black 18 32 56      // Dark navy
         red 235 77 75       // Crimson (errors)
-        green 38 166 154    // Teal-cyan (success - different from EVA green)
+        green 68 255 136    // EVA green #44FF88 (tab selector - matches i3 theme)
         yellow 199 146 234  // Mauve-purple (warnings - subtle nod to EVA)
         blue 55 148 192     // Ocean blue
         magenta 204 102 102 // Salmon pink
         cyan 42 161 152     // Strong cyan (primary accent)
         white 206 218 221   // Off-white
-        
+
         // Extended colors for complexity
         orange 203 75 22    // Deep orange (highlights)
         lime 133 153 0      // Olive lime (secondary success)
