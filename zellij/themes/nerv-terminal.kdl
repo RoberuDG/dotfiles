@@ -2,31 +2,29 @@
 // ║                   ZELLIJ THEME - NERV TERMINAL                                ║
 // ║                    Cyberpunk Solarized Fusion                                 ║
 // ╚═══════════════════════════════════════════════════════════════════════════════╝
-// Designed to be DISTINCT from EVA Unit-01 bottom theme
-// Uses Cyan/Amber base instead of Purple/Green
+// HIGH CONTRAST - Matching web version appearance
 // Tab selector uses EVA green (#44FF88) from i3 config
-// HIGH CONTRAST version for better readability
 
 themes {
     nerv-terminal {
-        // Base colors - darker background for contrast
-        fg 225 230 255      // Bright white-blue (high contrast text)
-        bg 10 15 30         // Deeper navy (darker background)
+        // Base colors - matching web version contrast
+        fg 220 220 220      // Bright white-gray (main text - high contrast)
+        bg 50 50 55         // Dark gray (matching web version)
 
-        // Core palette - cyan/amber focused (different from EVA purple/green)
-        black 15 25 45      // Dark navy (deeper for contrast)
-        red 255 100 100     // Bright crimson (errors - higher contrast)
+        // Core palette - high contrast colors
+        black 30 30 35      // Dark gray (borders)
+        red 255 85 85       // Bright red (errors)
         green 68 255 136    // EVA green #44FF88 (tab selector - matches i3 theme)
-        yellow 255 200 150  // Bright peach (warnings - higher contrast)
-        blue 100 180 255    // Bright sky blue (higher contrast)
-        magenta 255 150 150 // Light salmon (higher contrast)
-        cyan 100 255 255    // Bright cyan (primary accent - higher contrast)
-        white 240 245 255   // Near pure white (maximum contrast)
+        yellow 255 230 100  // Bright yellow (warnings)
+        blue 100 160 255    // Bright blue
+        magenta 255 100 255 // Bright magenta (focus indicator)
+        cyan 100 255 255    // Bright cyan (accents)
+        white 255 255 255   // Pure white (maximum contrast)
 
-        // Extended colors for complexity - all boosted for contrast
-        orange 255 120 50   // Bright orange (highlights)
-        lime 180 220 50     // Bright lime (secondary success)
-        pink 255 80 150     // Hot pink (alerts - higher contrast)
-        violet 180 190 200  // Light steel violet (borders - higher contrast)
+        // Extended colors
+        orange 255 150 50   // Bright orange
+        lime 150 255 100    // Bright lime
+        pink 255 100 180    // Hot pink
+        violet 200 180 255  // Light violet
     }
 }
