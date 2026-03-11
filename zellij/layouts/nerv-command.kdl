@@ -10,17 +10,17 @@ layout {
             // Top row - System stats (25% height)
             pane size=33 {
                 pane {
-                    run "bash -c 'while true; do clear; echo \"╔════════════════════════════════════════╗\"; echo \"║  NERV COMMAND CENTER - SYSTEM STATUS   ║\"; echo \"╚════════════════════════════════════════╝\"; echo \"\"; hostname; echo \"\"; uptime; echo \"\"; free -h | grep -E \"Mem|Swap\"; echo \"\"; df -h / /home 2>/dev/null | tail -2; sleep 1; done'"
+                    command "bash -c 'while true; do clear; echo \"╔════════════════════════════════════════╗\"; echo \"║  NERV COMMAND CENTER - SYSTEM STATUS   ║\"; echo \"╚════════════════════════════════════════╝\"; echo \"\"; hostname; echo \"\"; uptime; echo \"\"; free -h | grep -E \"Mem|Swap\"; echo \"\"; df -h / /home 2>/dev/null | tail -2; sleep 1; done'"
                 }
             }
             pane size=34 {
                 pane {
-                    run "bash -c 'while true; do clear; echo \"╔════════════════════════════════════════╗\"; echo \"║  CPU TEMPERATURE & FAN STATUS        ║\"; echo \"╚════════════════════════════════════════╝\"; echo \"\"; sensors 2>/dev/null | head -20 || echo \"sensors not available\"; sleep 2; done'"
+                    command "bash -c 'while true; do clear; echo \"╔════════════════════════════════════════╗\"; echo \"║  CPU TEMPERATURE & FAN STATUS        ║\"; echo \"╚════════════════════════════════════════╝\"; echo \"\"; sensors 2>/dev/null | head -20 || echo \"sensors not available\"; sleep 2; done'"
                 }
             }
             pane size=33 {
                 pane {
-                    run "bash -c 'while true; do clear; echo \"╔════════════════════════════════════════╗\"; echo \"║  NETWORK ACTIVITY                    ║\"; echo \"╚════════════════════════════════════════╝\"; echo \"\"; cat /proc/net/dev | grep -E \"eth|wlan|enp|wl\" | head -4; echo \"\"; ip addr 2>/dev/null | grep -E \"inet \" | head -4; sleep 1; done'"
+                    command "bash -c 'while true; do clear; echo \"╔════════════════════════════════════════╗\"; echo \"║  NETWORK ACTIVITY                    ║\"; echo \"╚════════════════════════════════════════╝\"; echo \"\"; cat /proc/net/dev | grep -E \"eth|wlan|enp|wl\" | head -4; echo \"\"; ip addr 2>/dev/null | grep -E \"inet \" | head -4; sleep 1; done'"
                 }
             }
         }
@@ -33,7 +33,7 @@ layout {
             pane size=30 {
                 // System logs (30% width)
                 pane {
-                    run "bash -c 'tail -n 100 /var/log/syslog 2>/dev/null || journalctl -n 100 --no-pager 2>/dev/null || echo \"Log access requires permissions\"'"
+                    command "bash -c 'tail -n 100 /var/log/syslog 2>/dev/null || journalctl -n 100 --no-pager 2>/dev/null || echo \"Log access requires permissions\"'"
                 }
             }
         }
@@ -41,12 +41,12 @@ layout {
             // Bottom row - Process monitor (25% height)
             pane size=50 {
                 pane {
-                    run "htop"
+                    command "htop"
                 }
             }
             pane size=50 {
                 pane {
-                    run "bash -c 'while true; do clear; echo \"╔════════════════════════════════════════╗\"; echo \"║  TOP PROCESSES BY MEMORY             ║\"; echo \"╚════════════════════════════════════════╝\"; echo \"\"; ps aux --sort=-%mem | head -12; sleep 2; done'"
+                    command "bash -c 'while true; do clear; echo \"╔════════════════════════════════════════╗\"; echo \"║  TOP PROCESSES BY MEMORY             ║\"; echo \"╚════════════════════════════════════════╝\"; echo \"\"; ps aux --sort=-%mem | head -12; sleep 2; done'"
                 }
             }
         }
@@ -66,17 +66,17 @@ layout {
             pane size=50 {
                 pane size=33 {
                     pane {
-                        run "bash -c 'echo \"╔════════════════════════════════════════╗\"; echo \"║  QUICK COMMANDS                      ║\"; echo \"╚════════════════════════════════════════╝\"; echo \"\"; echo \"git status\"; echo \"git log --oneline -10\"; echo \"npm run dev\"; echo \"cargo build\"; echo \"\"; echo \"Press Ctrl+p to navigate\"'"
+                        command "bash -c 'echo \"╔════════════════════════════════════════╗\"; echo \"║  QUICK COMMANDS                      ║\"; echo \"╚════════════════════════════════════════╝\"; echo \"\"; echo \"git status\"; echo \"git log --oneline -10\"; echo \"npm run dev\"; echo \"cargo build\"; echo \"\"; echo \"Press Ctrl+p to navigate\"'"
                     }
                 }
                 pane size=33 {
                     pane {
-                        run "bash -c 'while true; do clear; echo \"╔════════════════════════════════════════╗\"; echo \"║  GIT STATUS                          ║\"; echo \"╚════════════════════════════════════════╝\"; echo \"\"; git status 2>/dev/null || echo \"Not a git repo\"; sleep 5; done'"
+                        command "bash -c 'while true; do clear; echo \"╔════════════════════════════════════════╗\"; echo \"║  GIT STATUS                          ║\"; echo \"╚════════════════════════════════════════╝\"; echo \"\"; git status 2>/dev/null || echo \"Not a git repo\"; sleep 5; done'"
                     }
                 }
                 pane size=34 {
                     pane {
-                        run "bash -c 'while true; do clear; echo \"╔════════════════════════════════════════╗\"; echo \"║  SYSTEM RESOURCES                    ║\"; echo \"╚════════════════════════════════════════╝\"; echo \"\"; free -h; echo \"\"; df -h / | tail -1; sleep 3; done'"
+                        command "bash -c 'while true; do clear; echo \"╔════════════════════════════════════════╗\"; echo \"║  SYSTEM RESOURCES                    ║\"; echo \"╚════════════════════════════════════════╝\"; echo \"\"; free -h; echo \"\"; df -h / | tail -1; sleep 3; done'"
                     }
                 }
             }
@@ -87,7 +87,7 @@ layout {
     tab name="📊 Monitor" {
         pane size=100 {
             pane {
-                run "btop"
+                command "btop"
             }
         }
     }
@@ -96,12 +96,12 @@ layout {
     tab name="📁 Files" {
         pane size=50 {
             pane {
-                run "bash -c 'lf 2>/dev/null || ranger 2>/dev/null || exec bash'"
+                command "bash -c 'lf 2>/dev/null || ranger 2>/dev/null || exec bash'"
             }
         }
         pane size=50 {
             pane {
-                run "bash -c 'echo \"=== Directory Tree ===\"; tree -L 2 -I \"node_modules|.git|target\" 2>/dev/null || find . -maxdepth 2 -type d | head -30'"
+                command "bash -c 'echo \"=== Directory Tree ===\"; tree -L 2 -I \"node_modules|.git|target\" 2>/dev/null || find . -maxdepth 2 -type d | head -30'"
             }
         }
     }
