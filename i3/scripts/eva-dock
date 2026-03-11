@@ -1,0 +1,117 @@
+#!/bin/bash
+
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                    EVA UNIT-01 DOCK                                           ║
+# ║                         初号機 - NERV DOCK                                    ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+#
+# Centered dock in the middle of the screen
+#
+
+ROFI_THEME='
+* {
+  background:   #1C1A25EE;
+  background-alt: #2D2A3D;
+  foreground:   #F0F0F0;
+  border-color: #8A33FF;
+  accent-color: #44FF88;
+  urgent-color: #FF5577;
+}
+
+window {
+  background:   #1C1A25EE;
+  border:       3px solid #8A33FF;
+  border-radius: 12px;
+  width:        600px;
+  padding:      15px;
+  spacing:      10px;
+}
+
+mainbox {
+  background:   transparent;
+  spacing:      10px;
+}
+
+listview {
+  background:   transparent;
+  border:       0px;
+  columns:      5;
+  lines:        2;
+  scrollbar:    false;
+}
+
+element {
+  background:   #2D2A3D;
+  border:       2px solid #8A33FF;
+  border-radius: 8px;
+  padding:      15px;
+  spacing:      10px;
+  margin:       3px;
+}
+
+element selected {
+  background:   #8A33FF;
+  border-color: #44FF88;
+}
+
+element selected foreground {
+  foreground:   #1C1A25;
+}
+
+element-icon {
+  size:         48px;
+  border-radius: 8px;
+}
+
+element-text {
+  font:         "Iosevka Nerd Font Bold 12";
+  vertical-align: 0.5;
+}
+
+element-text selected {
+  foreground:   #1C1A25;
+}
+
+message {
+  background:   transparent;
+  padding:      5px;
+}
+
+message-text {
+  font:         "Iosevka Nerd Font Bold 10";
+  foreground:   #44FF88;
+}
+'
+
+DOCK_ITEMS="  Terminal  alacritty
+  Apps  rofi -show drun -config ~/.config/rofi/config.rasi
+  Browser  zen-browser
+  Files  thunar
+  Code  code
+  Discord  vesktop
+  Spotify  spotify
+  Settings  xfce4-settings-manager
+  Power  ~/.config/i3/scripts/powermenu
+  Camera  obs"
+
+echo -e "$DOCK_ITEMS" | rofi -dmenu \
+    -i \
+    -p "" \
+    -theme-str "$ROFI_THEME" \
+    -icon-theme "Papirus-Dark" \
+    -show-icons \
+    -kb-row-up "Up,Control+k" \
+    -kb-row-down "Down,Control+j" \
+    -kb-accept-entry "Return,KP_Enter" \
+    -kb-mode-next "" \
+    -kb-mode-prev "" \
+    -location center \
+    -width 60 \
+    -hide-scrollbar \
+    -disable-history \
+    -mesg " EVA DOCK - Select application" | while read -r line; do
+    cmd=$(echo "$line" | awk '{print $NF}')
+    if [ -n "$cmd" ]; then
+        eval "$cmd &"
+    fi
+done
