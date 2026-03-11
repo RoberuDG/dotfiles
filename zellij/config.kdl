@@ -173,7 +173,7 @@ keybinds clear-defaults=true {
             SwitchToMode "normal"
         }
         bind "l" {
-            Run "lazydocker" 2>/dev/null || Run "docker ps --format 'table {{.Names}}\\t{{.Status}}\\t{{.Ports}}'"
+            Run "bash -c 'lazydocker 2>/dev/null || docker ps --format \"table {{.Names}}\\t{{.Status}}\\t{{.Ports}}\"'"
             SwitchToMode "normal"
         }
     }
