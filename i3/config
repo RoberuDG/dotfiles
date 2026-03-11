@@ -333,9 +333,6 @@ bindsym $mod+F2 exec --no-startup-id zen-browser
 bindsym $mod+F3 exec --no-startup-id thunar
 bindsym $mod+F4 exec --no-startup-id zed
 
-# EVA Dock - Application launcher dock (centered)
-bindsym $mod+Shift+D exec --no-startup-id ~/.config/i3/scripts/eva-dock
-
 # Screenshot utilities
 bindsym Print exec --no-startup-id flameshot gui
 bindsym Shift+Print exec --no-startup-id flameshot full -p ~/Pictures/Screenshots
