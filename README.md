@@ -9,6 +9,8 @@ i3WM configuration with **video wallpaper support** for X11.
 - 🔒 **Blurred Lock Screen** - Multi-monitor support
 - ⚡ **Optimized Performance** - picom with use-damage=false
 - 🖥️ **Multi-monitor** - Automatic per-screen wallpapers
+- 📊 **System Monitoring** - Bottom/btop with EVA Unit-01 theme
+- 💻 **Terminal Multiplexer** - Zellij with NERV Command Center layout
 
 ## 📦 Installation
 
@@ -24,6 +26,12 @@ ln -sf ~/.config/dotfiles/picom/picom-optimized.conf ~/.config/picom/picom.conf
 
 # Install scripts
 ln -sf ~/.config/dotfiles/scripts/* ~/.config/i3/scripts/
+
+# Install bottom config (EVA Unit-01 theme)
+ln -sf ~/.config/dotfiles/bottom/bottom.toml ~/.config/bottom/bottom.toml
+
+# Install zellij config (NERV Command Center)
+ln -sf ~/.config/dotfiles/zellij/config.kdl ~/.config/zellij/config.kdl
 ```
 
 ## 🎬 Video Wallpaper Setup
@@ -78,6 +86,14 @@ dotfiles/
 │   ├── video-wallpaper     # Main video wallpaper script
 │   ├── wallpaper-colors    # Color extraction
 │   └── convert-to-1080p.sh # Video converter
+├── bottom/
+│   └── bottom.toml         # EVA Unit-01 themed system monitor
+├── zellij/
+│   ├── config.kdl          # NERV Command Center config
+│   ├── themes/
+│   │   └── nerv-terminal.kdl  # Cyberpunk Solarized theme
+│   └── layouts/
+│       └── nerv-command.kdl   # High-density multi-pane layout
 ├── starship.toml           # Prompt config
 └── README.md
 ```
@@ -100,4 +116,80 @@ hellwal matugen
 
 # Lock screen
 i3lock scrot imagemagick
+
+# System monitoring (bottom/btop)
+bottom btop htop
+
+# Terminal multiplexer
+zellij
+
+# Dev tools (optional, for NERV Command Center)
+lazygit lazydocker ncdu lf ranger
 ```
+
+## 📊 Bottom - EVA Unit-01 Theme
+
+High-density system monitor with EVA Unit-01 color scheme (purple/green/teal).
+
+```bash
+# Launch bottom
+btm
+
+# Features:
+# - 500ms refresh rate for dynamic display
+# - 5-minute time window with 30-minute retention
+# - GPU monitoring enabled
+# - All process columns visible
+# - Braille markers for high-resolution graphs
+# - 16-color CPU core gradient
+```
+
+**Color Palette** (distinct from zellij):
+- Primary: Purple `#8A33FF`
+- Secondary: Green `#44FF88`
+- Accent: Teal `#00FFFF`
+- Background: Dark `#0D0B14`
+
+## 💻 Zellij - NERV Command Center
+
+High-density terminal multiplexer with cyberpunk solarized theme (cyan/amber/navy).
+
+```bash
+# Launch zellij with NERV layout
+zellij
+
+# Or specify layout explicitly
+zellij --layout nerv-command
+
+# Keybinds (Session mode - Ctrl+o):
+# Ctrl+o m → bottom
+# Ctrl+o t → lazygit
+# Ctrl+o n → ncdu
+# Ctrl+o l → lazydocker
+# Ctrl+o v → nvim
+
+# Alt keybinds:
+# Alt+t → bottom
+# Alt+g → lazygit
+# Alt+d → ncdu
+# Alt+w → btm
+
+# Layout tabs:
+# ⚡ Command - 8-pane system monitoring hub
+# 💻 Dev - 6-pane development workspace
+# 📊 Monitor - Full-screen btop
+# 📁 Files - File manager + directory tree
+```
+
+**Color Palette** (distinct from bottom):
+- Primary: Cyan `#2AA198`
+- Secondary: Teal `#26A69A`
+- Accent: Orange `#CB7516`
+- Background: Navy `#0F172A`
+
+**Features:**
+- 50,000 line scrollback buffer
+- 5-second serialization interval
+- Advanced mouse actions enabled
+- Styled underlines for visual hierarchy
+- Live system stats in multiple panes

@@ -1,0 +1,199 @@
+# ╔═══════════════════════════════════════════════════════════════════════════════╗
+# ║                     BOTTOM CONFIG - EVA UNIT-01 THEME                         ║
+# ║                        初号機 - NERV MONITOR                                  ║
+# ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+[flags]
+# Update rate - faster for more dynamic display
+rate = "500ms"
+# Default time window - show more history
+default_time_value = "5m"
+# Time delta for zoom
+time_delta = 5000
+# Use braille markers for higher density/complexity
+dot_marker = false
+# Show CPU based on current usage
+current_usage = true
+# Show GPU info
+enable_gpu = true
+# Show cache and buffer memory
+enable_cache_memory = true
+# Show battery widgets
+battery = true
+# Show tree mode by default
+tree = false
+# Show process commands
+process_command = true
+# Network display preferences
+network_use_binary_prefix = true
+network_use_bytes = false
+network_use_log = true
+# How much data to retain - more history
+retention = "30m"
+# Default widget
+default_widget_type = "proc"
+default_widget_count = 1
+# Show table scroll position
+show_table_scroll_position = true
+# Expand selected widget
+expanded = true
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  EVA UNIT-01 COLOR SCHEME
+# ═══════════════════════════════════════════════════════════════════════════════
+[styles]
+theme = "default"
+
+[styles.cpu]
+all_entry_color = "#44FF88"
+avg_entry_color = "#8A33FF"
+cpu_core_colors = ["#8A33FF", "#A855FF", "#CBA6F7", "#B4BEFE", "#00FFFF", "#44FF88", "#5D9CEC", "#FFD700", "#FF5577", "#FFB347", "#2ECC71", "#9B59B6", "#3498DB", "#E74C3C", "#1ABC9C", "#F39C12"]
+
+[styles.memory]
+ram_color = "#CBA6F7"
+cache_color = "#B4BEFE"
+swap_color = "#FFD700"
+arc_color = "#00FFFF"
+gpu_colors = ["#5D9CEC", "#FF5577", "#00FFFF", "#44FF88", "#8A33FF", "#FFB347"]
+
+[styles.network]
+rx_color = "#44FF88"
+tx_color = "#FFB347"
+rx_total_color = "#00FFFF"
+tx_total_color = "#CBA6F7"
+
+[styles.battery]
+high_battery_color = "#44FF88"
+medium_battery_color = "#FFD700"
+low_battery_color = "#FF5577"
+
+[styles.tables]
+headers = { color = "#00FFFF", bold = true }
+selected_row = { color = "#0D0B14", bg_color = "#8A33FF" }
+selected_text_color = "#F0F0F0"
+
+[styles.graphs]
+graph_color = "#B4BEFE"
+legend_text = { color = "#B4BEFE" }
+
+[styles.widgets]
+border_color = "#2D2A3D"
+selected_border_color = "#8A33FF"
+widget_title = { color = "#CBA6F7", bold = true }
+text = { color = "#F0F0F0" }
+selected_text = { color = "#0D0B14", bg_color = "#8A33FF" }
+highlighted_text = { color = "#44FF88" }
+disabled_text = { color = "#444455" }
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  WIDGET CONFIGURATION
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Process widget - show all available columns for maximum info density
+[processes]
+columns = ["PID", "Name", "CPU%", "Mem%", "R/s", "W/s", "T.Read", "T.Write", "User", "State", "Time", "GMem%", "GPU%"]
+# Group processes by name for cleaner view
+group_processes = false
+# Show memory as values
+process_memory_as_value = false
+
+# CPU widget - show all cores
+[cpu]
+default = "all"
+
+# Disk widget - filter out unnecessary mounts
+[disk]
+[disk.name_filter]
+is_list_ignored = false
+list = ["/dev/sda.*", "/dev/nvme.*", "/dev/mmcblk.*"]
+regex = true
+case_sensitive = false
+whole_word = false
+
+[disk.mount_filter]
+is_list_ignored = false
+list = ["/boot", "/efi", "/snap"]
+regex = false
+case_sensitive = false
+whole_word = false
+
+# Temperature widget
+[temperature]
+[temperature.sensor_filter]
+is_list_ignored = true
+list = ["cpu", "edge", "Package"]
+regex = false
+case_sensitive = false
+whole_word = false
+
+# Network widget
+[network]
+[network.interface_filter]
+is_list_ignored = false
+list = ["en.*", "eth.*", "wlan.*", "wl.*"]
+regex = true
+case_sensitive = false
+whole_word = false
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  CUSTOM LAYOUT - High density, maximum information
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Top row - CPU with all cores visible
+[[row]]
+ratio = 30
+[[row.child]]
+type = "cpu"
+
+# Second row - Memory, Temps, and Battery
+[[row]]
+ratio = 20
+[[row.child]]
+ratio = 2
+type = "mem"
+[[row.child]]
+ratio = 2
+type = "temp"
+[[row.child]]
+ratio = 1
+type = "battery"
+
+# Third row - Disk and Network with log scale
+[[row]]
+ratio = 20
+[[row.child]]
+ratio = 2
+type = "disk"
+[[row.child]]
+ratio = 3
+type = "net"
+
+# Fourth row - GPU monitoring
+[[row]]
+ratio = 15
+[[row.child]]
+type = "empty"
+
+# Bottom row - Process list (largest section, expanded by default)
+[[row]]
+ratio = 35
+[[row.child]]
+type = "proc"
+default = true
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  KEYBINDINGS (Optional custom bindings)
+# ═══════════════════════════════════════════════════════════════════════════════
+# [keys]
+# d = "scroll_down"
+# u = "scroll_up"
+# g = "skip_to_top"
+# G = "skip_to_bottom"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  END OF CONFIG
+# ═══════════════════════════════════════════════════════════════════════════════
+#  EVA UNIT-01 INITIALIZED
+#  SYNCHRONIZATION RATE: 400%
+#  AT Field Status: ACTIVE
+# ═══════════════════════════════════════════════════════════════════════════════
