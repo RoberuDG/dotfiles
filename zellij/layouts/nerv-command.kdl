@@ -75,7 +75,7 @@ layout {
     // Tab 4: File Operations
     tab name="📁 Files" {
         pane size=50 {
-            pane run="lf" 2>/dev/null || pane run="ranger" 2>/dev/null || pane
+            pane run="bash -c 'lf 2>/dev/null || ranger 2>/dev/null || exec bash'"
         }
         pane size=50 {
             pane run="bash -c 'echo \"=== Directory Tree ===\"; tree -L 2 -I \"node_modules|.git|target\" 2>/dev/null || find . -maxdepth 2 -type d | head -30'"
