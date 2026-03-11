@@ -91,14 +91,20 @@ mode "launcher" {
     bindsym Return mode "default"
 }
 
-# Screenshot Mode
+# Screenshot Mode - flameshot focused
+# Enter with $mod+Print, then press:
+#   s - flameshot gui (select area)
+#   f - flameshot full (full screen)
+#   w - flameshot screen (active workspace)
+#   r - grim + slurp (wayland-style region)
 mode "screenshot" {
     bindsym s exec --no-startup-id flameshot gui; mode "default"
     bindsym f exec --no-startup-id flameshot full -p ~/Pictures/Screenshots; mode "default"
     bindsym w exec --no-startup-id flameshot screen -p ~/Pictures/Screenshots; mode "default"
     bindsym r exec --no-startup-id grim -g "$(slurp)" ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png; mode "default"
+    # Default action (Enter key) - flameshot gui
+    bindsym Return exec --no-startup-id flameshot gui; mode "default"
     bindsym Escape mode "default"
-    bindsym Return mode "default"
 }
 
 # Workspace Move Mode
@@ -333,10 +339,9 @@ bindsym $mod+F2 exec --no-startup-id zen-browser
 bindsym $mod+F3 exec --no-startup-id thunar
 bindsym $mod+F4 exec --no-startup-id zed
 
-# Screenshot utilities
-bindsym Print exec --no-startup-id flameshot gui
-bindsym Shift+Print exec --no-startup-id flameshot full -p ~/Pictures/Screenshots
-bindsym $mod+Shift+Print exec --no-startup-id flameshot screen -p ~/Pictures/Screenshots
+# Screenshot utilities - Use dedicated mode to avoid conflicts
+# $mod+Print enters screenshot mode for consistent flameshot behavior
+# (Direct Print bindings removed to prevent conflicts with other apps)
 
 # Clipboard manager (cliphist + rofi)
 bindsym $mod+Shift+x exec --no-startup-id ~/.config/i3/scripts/clipboard-manager --show
