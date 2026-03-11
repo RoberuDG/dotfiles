@@ -5,27 +5,28 @@
 // Designed to be DISTINCT from EVA Unit-01 bottom theme
 // Uses Cyan/Amber base instead of Purple/Green
 // Tab selector uses EVA green (#44FF88) from i3 config
+// HIGH CONTRAST version for better readability
 
 themes {
     nerv-terminal {
-        // Base colors - darker, more cyberpunk
-        fg 147 197 253      // Light blue-gray (text)
-        bg 15 23 42         // Deep navy (background)
+        // Base colors - darker background for contrast
+        fg 225 230 255      // Bright white-blue (high contrast text)
+        bg 10 15 30         // Deeper navy (darker background)
 
         // Core palette - cyan/amber focused (different from EVA purple/green)
-        black 18 32 56      // Dark navy
-        red 235 77 75       // Crimson (errors)
+        black 15 25 45      // Dark navy (deeper for contrast)
+        red 255 100 100     // Bright crimson (errors - higher contrast)
         green 68 255 136    // EVA green #44FF88 (tab selector - matches i3 theme)
-        yellow 199 146 234  // Mauve-purple (warnings - subtle nod to EVA)
-        blue 55 148 192     // Ocean blue
-        magenta 204 102 102 // Salmon pink
-        cyan 42 161 152     // Strong cyan (primary accent)
-        white 206 218 221   // Off-white
+        yellow 255 200 150  // Bright peach (warnings - higher contrast)
+        blue 100 180 255    // Bright sky blue (higher contrast)
+        magenta 255 150 150 // Light salmon (higher contrast)
+        cyan 100 255 255    // Bright cyan (primary accent - higher contrast)
+        white 240 245 255   // Near pure white (maximum contrast)
 
-        // Extended colors for complexity
-        orange 203 75 22    // Deep orange (highlights)
-        lime 133 153 0      // Olive lime (secondary success)
-        pink 216 27 96      // Hot pink (alerts)
-        violet 108 117 125  // Steel violet (borders)
+        // Extended colors for complexity - all boosted for contrast
+        orange 255 120 50   // Bright orange (highlights)
+        lime 180 220 50     // Bright lime (secondary success)
+        pink 255 80 150     // Hot pink (alerts - higher contrast)
+        violet 180 190 200  // Light steel violet (borders - higher contrast)
     }
 }
